@@ -7,9 +7,12 @@ import "@fontsource/lato/700.css"
 import "./index.css"
 
 import { router } from "@/routes"
+import { AuthProvider } from "./contexts/auth-context"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )
