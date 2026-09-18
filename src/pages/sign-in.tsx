@@ -7,7 +7,10 @@ import { Link } from "react-router-dom"
 import logo from "@/assets/logo.svg"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { api } from "@/services/api"
+
+import { useNavigate } from "react-router-dom"
+import { isAxiosError } from "axios"
+import { useAuth } from "@/contexts/auth-context"
 
 const signInSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -18,6 +21,8 @@ type SignInForm = z.infer<typeof signInSchema>
 
 export function SignIn() {
   const [apiError, setApiError] = useState<string | null>(null)
+  const { signIn } = useAuth()
+  const navigate = useNavigate()
 
   const {
     register,
@@ -31,15 +36,26 @@ export function SignIn() {
     setApiError(null)
 
     try {
-      const response = await api.post("/sessions", data)
-      console.log(response.data)
-    } catch {
-      setApiError("E-mail ou senha inválidos")
+      const user = await signIn(data.email, data.password)
+
+      if (user.role === "ADMIN") {
+        navigate("/admin/tickets")
+      } else if (user.role === "TECHNICIAN") {
+        navigate("/technician/tickets")
+      } else {
+        navigate("/tickets")
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        setApiError(error.response?.data?.message ?? "Erro ao entrar")
+      } else {
+        setApiError("Não foi possível conectar ao servidor")
+      }
     }
   }
 
   return (
-    <div className="flex w-full max-w-95 flex-col gap-3">
+    <div className="flex w-full max-w-100 flex-col gap-3">
       <img src={logo} alt="HelpDesk" className="mx-auto mb-4 h-12" />
 
       <form
