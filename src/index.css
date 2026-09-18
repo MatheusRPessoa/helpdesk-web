@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  /* tipografia */
+  --text-xxs: 0.625rem;
+  --text-xxs--line-height: 1.4;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.4;
+  --text-md: 1rem;
+  --text-md--line-height: 1.4;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.4;
+
+  --font-sans: "Lato", sans-serif;
+
+  --color-gray-100: #ffffff;
+  --color-gray-200: #f8f9fa;
+  --color-gray-300: #e6e7eb;
+  --color-gray-400: #d1d3d9;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #1f2937;
+
+  --color-blue-base: #1a4fba;
+  --color-blue-dark: #0c2040;
+  --color-blue-light: #e8f0ff;
+}
+
+body {
+  font-family: var(--font-sans);
+}
