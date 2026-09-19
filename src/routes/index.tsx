@@ -6,13 +6,9 @@ import { ProtectedRoute } from "./protected-route"
 import { SignUp } from "@/pages/sign-up"
 import { AdminLayout } from "@/layouts/admin-layout"
 import { AdminTickets } from "@/pages/admin/tickets"
+import { AdminTicketDetail } from "@/pages/admin/ticket-detail"
 
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <AuthLayout />,
-    children: [{ index: true, element: <SignIn /> }],
-  },
   {
     path: "/",
     element: <AuthLayout />,
@@ -27,7 +23,8 @@ export const router = createBrowserRouter([
       {
         element: <AdminLayout />,
         children: [
-          { path: "/admin/tickets", element: <AdminTickets /> }
+          { path: "/admin/tickets", element: <AdminTickets /> },
+          { path: "/admin/tickets/:id", element: <AdminTicketDetail /> },
         ]
       },
     ],
