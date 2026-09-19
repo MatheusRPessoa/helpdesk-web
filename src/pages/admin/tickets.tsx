@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react"
 import { api } from "@/services/api"
 import { StatusBadge } from "@/components/ui/status-badge"
 import type { Ticket } from "@/types"
+import { useNavigate } from "react-router-dom"
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString("pt-BR", {
@@ -32,6 +33,7 @@ function initials(name: string) {
 }
 
 export function AdminTickets() {
+  const navigate = useNavigate()
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -124,7 +126,10 @@ export function AdminTickets() {
                     <StatusBadge status={ticket.status} />
                   </td>
                   <td className="px-4 py-3">
-                    <button className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200">
+                    <button
+                      onClick={() => navigate(`/admin/tickets/${ticket.id}`)} 
+                      className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
+                    >
                       <Pencil size={14} className="text-gray-600" />
                     </button>
                   </td>
