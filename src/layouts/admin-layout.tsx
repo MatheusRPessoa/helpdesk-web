@@ -8,7 +8,7 @@ export function AdminLayout() {
         <AdminSidebar />
       </div>
 
-      <main className="flex-1 overflow-auto rounded-tl-[10px] bg-gray-200 px-6 py-7 lg:mt-3">
+      <main className="flex-1 overflow-auto rounded-tl-[10px] bg-gray-200 px-10 py-12 lg:mt-3">
         <Outlet />
       </main>
     </div>
