@@ -134,8 +134,8 @@ export function AdminTicketDetail() {
                     </div>
                 </section>
 
-                <section className="w-full rounded-[10px] border border-gray-300 
-                                  bg-gray-100 p-6 lg:w-[320px]">
+                <section className="w-full rounded-[10px] border border-gray-300
+                                  bg-gray-100 p-6 lg:w-[320px] lg:self-start">
                     <div className="mb-6">
                         <p className="mb-2 text-xxs text-gray-500">Técnico responsável</p>
                         <UserBadge

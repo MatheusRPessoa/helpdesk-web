@@ -7,6 +7,7 @@ import { SignUp } from "@/pages/sign-up"
 import { AdminLayout } from "@/layouts/admin-layout"
 import { AdminTickets } from "@/pages/admin/tickets"
 import { AdminTicketDetail } from "@/pages/admin/ticket-detail"
+import { AdminTechnicians } from "@/pages/admin/technicians"
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "/admin/tickets", element: <AdminTickets /> },
           { path: "/admin/tickets/:id", element: <AdminTicketDetail /> },
+          { path: "/admin/technicians", element: <AdminTechnicians /> },
         ]
       },
     ],

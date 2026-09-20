@@ -37,3 +37,12 @@ export interface Ticket {
   technician: { id: string; name: string; email: string; avatarUrl: string | null }
   services: TicketService[]
 }
+
+export interface Availability {
+  id: string
+  hour: string
+}
+
+export interface Technician extends User {
+  availabilities: Availability[]
+}
