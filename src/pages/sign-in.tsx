@@ -1,28 +1,28 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Link } from "react-router-dom";
 
-import logo from "@/assets/logo.svg"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import logo from "@/assets/logo.svg";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-import { useNavigate } from "react-router-dom"
-import { isAxiosError } from "axios"
-import { useAuth } from "@/contexts/auth-context"
+import { useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
+import { useAuth } from "@/hooks/use-auth";
 
 const signInSchema = z.object({
   email: z.email("E-mail inválido"),
   password: z.string().min(1, "Informe sua senha"),
-})
+});
 
-type SignInForm = z.infer<typeof signInSchema>
+type SignInForm = z.infer<typeof signInSchema>;
 
 export function SignIn() {
-  const [apiError, setApiError] = useState<string | null>(null)
-  const { signIn } = useAuth()
-  const navigate = useNavigate()
+  const [apiError, setApiError] = useState<string | null>(null);
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -30,26 +30,26 @@ export function SignIn() {
     formState: { errors, isSubmitting },
   } = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
-  })
+  });
 
   async function onSubmit(data: SignInForm) {
-    setApiError(null)
+    setApiError(null);
 
     try {
-      const user = await signIn(data.email, data.password)
+      const user = await signIn(data.email, data.password);
 
       if (user.role === "ADMIN") {
-        navigate("/admin/tickets")
+        navigate("/admin/tickets");
       } else if (user.role === "TECHNICIAN") {
-        navigate("/technician/tickets")
+        navigate("/technician/tickets");
       } else {
-        navigate("/tickets")
+        navigate("/tickets");
       }
     } catch (error) {
       if (isAxiosError(error)) {
-        setApiError(error.response?.data?.message ?? "Erro ao entrar")
+        setApiError(error.response?.data?.message ?? "Erro ao entrar");
       } else {
-        setApiError("Não foi possível conectar ao servidor")
+        setApiError("Não foi possível conectar ao servidor");
       }
     }
   }
@@ -110,5 +110,5 @@ export function SignIn() {
         </Link>
       </div>
     </div>
-  )
+  );
 }

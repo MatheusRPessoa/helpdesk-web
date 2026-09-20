@@ -1,6 +1,6 @@
-import { Circle, Clock, CheckCircle2 } from "lucide-react"
+import { Circle, Clock, CheckCircle2 } from "lucide-react";
 
-type Status = "OPEN" | "IN_PROGRESS" | "CLOSED"
+type Status = "OPEN" | "IN_PROGRESS" | "CLOSED";
 
 const config = {
   OPEN: {
@@ -18,10 +18,10 @@ const config = {
     className: "bg-green-50 text-green-700",
     Icon: CheckCircle2,
   },
-}
+};
 
 export function StatusBadge({ status }: { status: Status }) {
-  const { label, className, Icon } = config[status]
+  const { label, className, Icon } = config[status];
 
   return (
     <span
@@ -30,5 +30,5 @@ export function StatusBadge({ status }: { status: Status }) {
       <Icon size={12} />
       {label}
     </span>
-  )
+  );
 }

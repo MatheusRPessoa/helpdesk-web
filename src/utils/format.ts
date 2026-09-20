@@ -5,12 +5,12 @@ export function formatDate(value: string) {
     year: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-  })
+  });
 }
 
 export function formatCurrency(value: string) {
   return Number(value).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
-  })
+  });
 }

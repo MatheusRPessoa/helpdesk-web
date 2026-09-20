@@ -1,10 +1,10 @@
-import { forwardRef } from "react"
-import type { ComponentProps } from "react"
+import { forwardRef } from "react";
+import type { ComponentProps } from "react";
 
 interface InputProps extends ComponentProps<"input"> {
-  label: string
-  error?: string
-  hint?: string
+  label: string;
+  error?: string;
+  hint?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -25,8 +25,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <span className="text-xxs italic text-gray-400">{hint}</span>
         ) : null}
       </div>
-    )
+    );
   },
-)
+);
 
-Input.displayName = "Input"
+Input.displayName = "Input";

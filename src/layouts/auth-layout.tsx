@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom"
-import background from "@/assets/login-background.png"
+import { Outlet } from "react-router-dom";
+import background from "@/assets/login-background.png";
 
 export function AuthLayout() {
   return (
@@ -13,5 +13,5 @@ export function AuthLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }

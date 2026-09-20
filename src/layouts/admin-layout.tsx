@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom"
-import { AdminSidebar } from "@/components/admin-sidebar"
+import { Outlet } from "react-router-dom";
+import { AdminSidebar } from "@/components/admin-sidebar";
 
 export function AdminLayout() {
   return (
@@ -12,5 +12,5 @@ export function AdminLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }

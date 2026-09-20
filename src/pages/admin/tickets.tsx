@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react"
-import { Pencil } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 
-import { api } from "@/services/api"
-import { StatusBadge } from "@/components/ui/status-badge"
-import type { Ticket } from "@/types"
-import { useNavigate } from "react-router-dom"
+import { api } from "@/services/api";
+import { StatusBadge } from "@/components/ui/status-badge";
+import type { Ticket } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString("pt-BR", {
@@ -13,14 +13,14 @@ function formatDate(value: string) {
     year: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-  })
+  });
 }
 
 function formatCurrency(value: string) {
   return Number(value).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
-  })
+  });
 }
 
 function initials(name: string) {
@@ -29,20 +29,20 @@ function initials(name: string) {
     .slice(0, 2)
     .map((part) => part[0])
     .join("")
-    .toUpperCase()
+    .toUpperCase();
 }
 
 export function AdminTickets() {
-  const navigate = useNavigate()
-  const [tickets, setTickets] = useState<Ticket[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const navigate = useNavigate();
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     api
       .get<Ticket[]>("/tickets")
       .then((response) => setTickets(response.data))
-      .finally(() => setIsLoading(false))
-  }, [])
+      .finally(() => setIsLoading(false));
+  }, []);
 
   return (
     <div className="mx-auto 275">
@@ -60,7 +60,9 @@ export function AdminTickets() {
                 <th className="px-4 py-3 text-xxs font-bold text-gray-500">
                   Atualizado em
                 </th>
-                <th className="px-4 py-3 text-xxs font-bold text-gray-500">Id</th>
+                <th className="px-4 py-3 text-xxs font-bold text-gray-500">
+                  Id
+                </th>
                 <th className="px-4 py-3 text-xxs font-bold text-gray-500">
                   Título e Serviço
                 </th>
@@ -127,7 +129,7 @@ export function AdminTickets() {
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => navigate(`/admin/tickets/${ticket.id}`)} 
+                      onClick={() => navigate(`/admin/tickets/${ticket.id}`)}
                       className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                     >
                       <Pencil size={14} className="text-gray-600" />
@@ -140,5 +142,5 @@ export function AdminTickets() {
         </div>
       )}
     </div>
-  )
+  );
 }
