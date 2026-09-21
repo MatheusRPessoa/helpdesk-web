@@ -46,3 +46,7 @@ export interface Availability {
 export interface Technician extends User {
   availabilities: Availability[]
 }
+
+export interface Customer extends User {
+  ticketsCount: number
+}
