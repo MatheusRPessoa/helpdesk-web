@@ -4,6 +4,8 @@ import { Pencil, Plus, Ban, CircleCheck } from "lucide-react";
 import { isAxiosError } from "axios";
 
 import { api } from "@/services/api";
+import { ActiveBadge } from "@/components/ui/active-badge";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/utils/format";
 import type { Service } from "@/types";
 
@@ -11,6 +13,7 @@ export function AdminServices() {
   const navigate = useNavigate();
 
   const [services, setServices] = useState<Service[]>([]);
+  const [deactivating, setDeactivating] = useState<Service | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -41,10 +44,17 @@ export function AdminServices() {
       const message = isAxiosError(error)
         ? error.response?.data?.message
         : undefined;
-      setApiError(message ?? "Erro ao excluir serviço");
+      setApiError(message ?? "Erro ao alterar status do serviço");
     } finally {
       setTogglingId(null);
     }
+  }
+
+  async function handleConfirmDeactivate() {
+    if (!deactivating) return;
+
+    await toggleStatus(deactivating);
+    setDeactivating(null);
   }
 
   return (
@@ -102,25 +112,21 @@ export function AdminServices() {
                   <td className="px-4 py-2.5 text-xs font-bold text-gray-600">
                     {service.title}
                   </td>
-                  <td className="px-4 py-5 text-xs text-gray-600">
+                  <td className="px-4 py-2.5 text-xs text-gray-600">
                     {formatCurrency(service.price)}
                   </td>
                   <td className="px-4 py-2.5">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xxs font-bold ${
-                        service.isActive
-                          ? "bg-green-50 text-green-700"
-                          : "bg-red-50 text-red-700"
-                      }`}
-                    >
-                      {service.isActive ? "Ativo" : "Inativo"}
-                    </span>
+                    <ActiveBadge isActive={service.isActive} />
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-end gap-3">
                       <button
-                        onClick={() => toggleStatus(service)}
-                        disabled={togglingId === service.id}
+                        onClick={() =>
+                          service.isActive
+                            ? setDeactivating(service)
+                            : toggleStatus(service)
+                        }
+                        disabled={togglingId !== null}
                         className="flex items-center gap-1.5 text-xxs text-gray-600 transition
                                                          hover:text-gray-500 disabled:opacity-50"
                       >
@@ -154,6 +160,15 @@ export function AdminServices() {
           </table>
         </div>
       )}
+      <ConfirmDialog
+        open={deactivating !== null}
+        title="Desativar serviço"
+        description={`Tem certeza que deseja desativar ${deactivating?.title}? Ele deixará de aparecer como opção em novos chamados.`}
+        confirmText="Desativar"
+        isLoading={togglingId !== null}
+        onConfirm={handleConfirmDeactivate}
+        onCancel={() => setDeactivating(null)}
+      />
     </div>
   );
 }
