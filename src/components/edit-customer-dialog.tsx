@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { UserBadge } from "@/components/ui/user-badge";
 import type { Customer } from "@/types";
 
 const schema = z.object({
@@ -69,6 +70,11 @@ export function EditCustomerDialog({
         </h2>
       </div>
       <form onSubmit={handleSubmit(onSave)} className="space-y-4 p-6">
+        <UserBadge
+          name={customer.name}
+          avatarUrl={customer.avatarUrl}
+          size="md"
+        />
         <Input
           label="Nome"
           aria-label="Nome"
