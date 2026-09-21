@@ -160,10 +160,11 @@ export function AdminServices() {
           </table>
         </div>
       )}
+
       <ConfirmDialog
         open={deactivating !== null}
         title="Desativar serviço"
-        description={`Tem certeza que deseja desativar ${deactivating?.title}? Ele deixará de aparecer como opção em novos chamados.`}
+        description={`Tem certeza que deseja desativar ${deactivating?.title ?? ""}? Ele deixará de aparecer como opção em novos chamados.`}
         confirmText="Desativar"
         isLoading={togglingId !== null}
         onConfirm={handleConfirmDeactivate}
