@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useLayoutEffect, useId, useRef } from "react";
 import type { SyntheticEvent } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export function ConfirmDialog({
   const titleId = useId();
   const descriptionId = useId();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog || !open) return;
 
