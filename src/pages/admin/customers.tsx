@@ -60,7 +60,7 @@ export function AdminCustomers() {
       )}
 
       {isLoading ? (
-        <p className="text-sm text-gray-500"> Carregando...</p>
+        <p className="text-sm text-gray-500">Carregando...</p>
       ) : hasError ? (
         <p role="alert" className="text-sm text-gray-500">
           Não foi possível carregar os clientes.
