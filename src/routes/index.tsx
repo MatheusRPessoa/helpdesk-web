@@ -9,7 +9,8 @@ import { AdminTickets } from "@/pages/admin/tickets";
 import { AdminTicketDetail } from "@/pages/admin/ticket-detail";
 import { AdminTechnicians } from "@/pages/admin/technicians";
 import { AdminTechnicianForm } from "@/pages/admin/technician-form";
-import { AdminCustomer } from "@/pages/admin/customers";
+import { AdminCustomers } from "@/pages/admin/customers";
+import { UnderDevelopment } from "@/pages/under-development";
 
 export const router = createBrowserRouter([
   {
@@ -31,8 +32,8 @@ export const router = createBrowserRouter([
           { path: "/admin/technicians", element: <AdminTechnicians /> },
           { path: "/admin/technicians/new", element: <AdminTechnicianForm /> },
           { path: "/admin/technicians/:id", element: <AdminTechnicianForm /> },
-          { path: "/admin/customers", element: <AdminCustomer /> },
-          { path: "/admin/customers/:id", element: <AdminCustomer /> }
+          { path: "/admin/customers", element: <AdminCustomers /> },
+          { path: "/admin/customers/:id", element: <UnderDevelopment /> },
         ],
       },
     ],

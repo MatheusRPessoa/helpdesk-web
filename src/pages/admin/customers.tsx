@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { Pencil, Trash2 } from "lucide-react";
 
 import { api } from "@/services/api";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UserBadge } from "@/components/ui/user-badge";
 import type { Customer } from "@/types";
-import { isAxiosError } from "axios";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
-export function AdminCustomer() {
+export function AdminCustomers() {
   const navigate = useNavigate();
 
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -30,7 +30,6 @@ export function AdminCustomer() {
     if (!deleting) return;
 
     setIsDeleting(true);
-    setApiError(null);
 
     try {
       await api.delete(`/customers/${deleting.id}`);
@@ -38,9 +37,10 @@ export function AdminCustomer() {
         current.filter((item) => item.id !== deleting.id),
       );
     } catch (error) {
-      if (isAxiosError(error)) {
-        setApiError(error.response?.data?.message ?? "Erro ao excluir cliente");
-      }
+      const message = isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined;
+      setApiError(message ?? "Erro ao excluir cliente");
     } finally {
       setIsDeleting(false);
       setDeleting(null);
@@ -51,9 +51,13 @@ export function AdminCustomer() {
     <div className="mx-auto w-full max-w-225">
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-xl font-bold text-blue-900">Clientes</h1>
-
-        {apiError && <p className="mb-3 text-xs text-red-600">{apiError}</p>}
       </div>
+
+      {apiError && (
+        <p role="alert" className="mb-3 text-xs text-red-600">
+          {apiError}
+        </p>
+      )}
 
       {isLoading ? (
         <p className="text-sm text-gray-500"> Carregando...</p>
@@ -67,13 +71,14 @@ export function AdminCustomer() {
         <div className="overflow-x-auto rounded-[10px] border border-gray-300 bg-gray-100">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-300 text-left text-xs text-gray-600">
+              <tr className="border-b border-gray-300 text-left">
                 <th className="px-4 py-2 text-xs font-bold text-gray-500">
                   Nome
                 </th>
                 <th className="px-4 py-2 text-xs font-bold text-gray-500">
                   E-mail
                 </th>
+                <th className="px-4 py-2" />
               </tr>
             </thead>
             <tbody>
@@ -91,15 +96,17 @@ export function AdminCustomer() {
                   <td className="px-4 py-2.5 text-xs text-gray-600">
                     {customer.email}
                   </td>
-
                   <td className="px-4 py-2.5">
                     <div className="flex justify-end gap-2">
                       <button
                         aria-label={`Excluir ${customer.name}`}
-                        onClick={() => setDeleting(customer)}
+                        onClick={() => {
+                          setApiError(null);
+                          setDeleting(customer);
+                        }}
                         className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
-                        <Trash2 size={14} className="text-red-600"/>
+                        <Trash2 size={14} className="text-red-600" />
                       </button>
 
                       <button
@@ -110,10 +117,7 @@ export function AdminCustomer() {
                         className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
                         <Pencil size={14} className="text-gray-600" />
-                      </button>
-
-                      
-                      
+                      </button>               
                     </div>
                   </td>
                 </tr>
@@ -123,9 +127,8 @@ export function AdminCustomer() {
         </div>
       )}
 
-      {deleting && (
-        <ConfirmDialog
-          open={Boolean(deleting)}
+      <ConfirmDialog
+          open={deleting !== null}
           title="Excluir cliente"
           description={
             deleting && deleting.ticketsCount > 0
@@ -136,8 +139,7 @@ export function AdminCustomer() {
           isLoading={isDeleting}
           onConfirm={handleDelete}
           onCancel={() => setDeleting(null)}
-        />
-      )}
+      />
     </div>
   );
 }
