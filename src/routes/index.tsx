@@ -32,8 +32,7 @@ export const router = createBrowserRouter([
           { path: "/admin/technicians/new", element: <AdminTechnicianForm /> },
           { path: "/admin/technicians/:id", element: <AdminTechnicianForm /> },
           { path: "/admin/customers", element: <AdminCustomer /> },
-          { path: "/admin/customers/:id", element: <AdminCustomer /> },
-          { path: "/admin/customers/:id", element: <AdminCustomer /> },
+          { path: "/admin/customers/:id", element: <AdminCustomer /> }
         ],
       },
     ],

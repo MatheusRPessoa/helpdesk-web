@@ -56,7 +56,7 @@ export function AdminCustomer() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-gray-500">carregando...</p>
+        <p className="text-sm text-gray-500"> Carregando...</p>
       ) : hasError ? (
         <p role="alert" className="text-sm text-gray-500">
           Não foi possível carregar os clientes.
@@ -68,10 +68,10 @@ export function AdminCustomer() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-300 text-left text-xs text-gray-600">
-                <th className="px-4 py-3 text-xs font-bold text-gray-500">
+                <th className="px-4 py-2 text-xs font-bold text-gray-500">
                   Nome
                 </th>
-                <th className="px-4 py-3 text-xs font-bold text-gray-500">
+                <th className="px-4 py-2 text-xs font-bold text-gray-500">
                   E-mail
                 </th>
               </tr>
@@ -94,7 +94,6 @@ export function AdminCustomer() {
 
                   <td className="px-4 py-2.5">
                     <div className="flex justify-end gap-2">
-
                       <button
                         aria-label={`Excluir ${customer.name}`}
                         onClick={() => setDeleting(customer)}
