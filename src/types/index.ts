@@ -58,5 +58,5 @@ export interface Technician extends User {
 }
 
 export interface Customer extends User {
-  ticketsCount: number
+  ticketsCount: number;
 }

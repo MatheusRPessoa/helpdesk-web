@@ -12,11 +12,13 @@ export function AdminTechnicians() {
 
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     api
       .get<Technician[]>("/technicians")
       .then((response) => setTechnicians(response.data))
+      .catch(() => setHasError(true))
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -37,6 +39,10 @@ export function AdminTechnicians() {
 
       {isLoading ? (
         <p className="text-sm text-gray-500">Carregando...</p>
+      ) : hasError ? (
+        <p role="alert" className="text-sm text-gray-500">
+          Não foi possível carregar os técnicos.
+        </p>
       ) : technicians.length === 0 ? (
         <p className="text-sm text-gray-500">Nenhum técnico cadastrado</p>
       ) : (
@@ -68,7 +74,7 @@ export function AdminTechnicians() {
                       avatarUrl={technician.avatarUrl}
                     />
                   </td>
-                  <td className="px-4 pt-2.5 text-xs text-gray-600">
+                  <td className="px-4 py-2.5 text-xs text-gray-600">
                     {technician.email}
                   </td>
                   <td className="px-4 py-2.5">
