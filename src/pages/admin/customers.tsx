@@ -117,7 +117,7 @@ export function AdminCustomers() {
                         className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
                         <Pencil size={14} className="text-gray-600" />
-                      </button>               
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -128,17 +128,17 @@ export function AdminCustomers() {
       )}
 
       <ConfirmDialog
-          open={deleting !== null}
-          title="Excluir cliente"
-          description={
-            deleting && deleting.ticketsCount > 0
-              ? `${deleting.name} possui ${deleting.ticketsCount} chamado(s). Excluir a conta também remove todos eles. Esta ação não pode ser desfeita.`
-              : `Tem certeza que deseja excluir a conta de ${deleting?.name}? Esta ação não pode ser desfeita.`
-          }
-          confirmText="Excluir"
-          isLoading={isDeleting}
-          onConfirm={handleDelete}
-          onCancel={() => setDeleting(null)}
+        open={deleting !== null}
+        title="Excluir cliente"
+        description={
+          deleting && deleting.ticketsCount > 0
+            ? `${deleting.name} possui ${deleting.ticketsCount} chamado(s). Excluir a conta também remove todos eles. Esta ação não pode ser desfeita.`
+            : `Tem certeza que deseja excluir a conta de ${deleting?.name}? Esta ação não pode ser desfeita.`
+        }
+        confirmText="Excluir"
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleting(null)}
       />
     </div>
   );
