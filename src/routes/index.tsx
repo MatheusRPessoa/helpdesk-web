@@ -33,7 +33,6 @@ export const router = createBrowserRouter([
           { path: "/admin/technicians/new", element: <AdminTechnicianForm /> },
           { path: "/admin/technicians/:id", element: <AdminTechnicianForm /> },
           { path: "/admin/customers", element: <AdminCustomers /> },
-          { path: "/admin/customers/:id", element: <UnderDevelopment /> },
         ],
       },
     ],

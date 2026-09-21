@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { Pencil, Trash2 } from "lucide-react";
 
 import { api } from "@/services/api";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { EditCustomerDialog } from "@/components/edit-customer-dialog";
 import { UserBadge } from "@/components/ui/user-badge";
 import type { Customer } from "@/types";
 
 export function AdminCustomers() {
-  const navigate = useNavigate();
-
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [deleting, setDeleting] = useState<Customer | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<Customer | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -44,6 +44,27 @@ export function AdminCustomers() {
     } finally {
       setIsDeleting(false);
       setDeleting(null);
+    }
+  }
+
+  async function handleUpdate(values: Pick<Customer, "name" | "email">) {
+    if (!editing) return;
+
+    setEditError(null);
+
+    try {
+      const { data } = await api.put(`/customers/${editing.id}`, values);
+      setCustomers((current) =>
+        current.map((customer) =>
+          customer.id === editing.id ? { ...customer, ...data } : customer,
+        ),
+      );
+      setEditing(null);
+    } catch (error) {
+      const message = isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined;
+      setEditError(message ?? "Erro ao salvar cliente");
     }
   }
 
@@ -111,9 +132,10 @@ export function AdminCustomers() {
 
                       <button
                         aria-label={`Editar ${customer.name}`}
-                        onClick={() =>
-                          navigate(`/admin/customers/${customer.id}`)
-                        }
+                        onClick={() => {
+                          setEditError(null);
+                          setEditing(customer);
+                        }}
                         className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
                         <Pencil size={14} className="text-gray-600" />
@@ -140,6 +162,15 @@ export function AdminCustomers() {
         onConfirm={handleDelete}
         onCancel={() => setDeleting(null)}
       />
+
+      {editing && (
+        <EditCustomerDialog
+          customer={editing}
+          error={editError}
+          onCancel={() => setEditing(null)}
+          onSave={handleUpdate}
+        />
+      )}
     </div>
   );
 }
