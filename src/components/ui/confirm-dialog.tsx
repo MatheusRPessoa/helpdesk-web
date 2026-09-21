@@ -82,10 +82,12 @@ export function ConfirmDialog({
             variant="secondary"
             disabled={isLoading}
             onClick={onCancel}
+            className="cursor-pointer"
           >
             {cancelText}
           </Button>
           <Button
+            className="cursor-pointer"
             type="button"
             disabled={isLoading}
             aria-busy={isLoading}

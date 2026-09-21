@@ -99,6 +99,7 @@ export function EditCustomerDialog({
         )}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button
+            className="cursor-pointer"
             type="button"
             variant="secondary"
             disabled={isSubmitting}
@@ -107,6 +108,7 @@ export function EditCustomerDialog({
             Cancelar
           </Button>
           <Button
+            className="cursor-pointer"
             type="submit"
             disabled={isSubmitting}
             aria-busy={isSubmitting}

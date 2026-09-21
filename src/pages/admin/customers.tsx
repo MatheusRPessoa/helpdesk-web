@@ -125,7 +125,7 @@ export function AdminCustomers() {
                           setApiError(null);
                           setDeleting(customer);
                         }}
-                        className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
+                        className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200 cursor-pointer"
                       >
                         <Trash2 size={14} className="text-red-600" />
                       </button>
@@ -136,9 +136,9 @@ export function AdminCustomers() {
                           setEditError(null);
                           setEditing(customer);
                         }}
-                        className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
+                        className="cursor-pointer rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
-                        <Pencil size={14} className="text-gray-600" />
+                        <Pencil size={14} className="text-gray-600 cursor-pointer" />
                       </button>
                     </div>
                   </td>

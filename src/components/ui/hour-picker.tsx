@@ -41,7 +41,7 @@ export function HourPicker({ selected, onChange }: HourPickerProps) {
                   key={hour}
                   type="button"
                   onClick={() => toggle(hour)}
-                  className={`rounded-full border px-3 py-1.5 text-xxs transition ${
+                  className={`cursor-pointer rounded-full border px-3 py-1.5 text-xxs transition${
                     isSelected
                       ? "border-blue-base bg-blue-light font-bold text-blue-base"
                       : "border-gray-300 text-gray-600 hover:border-gray-400"

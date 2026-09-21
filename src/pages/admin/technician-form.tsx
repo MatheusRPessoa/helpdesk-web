@@ -114,7 +114,7 @@ export function AdminTechnicianForm() {
       <button
         type="button"
         onClick={() => navigate("/admin/technicians")}
-        className="mb-2 flex items-center gap-1 text-xxs text-gray-500 transition hover:text-gray-600"
+        className="mb-2 flex items-center gap-1 text-xxs text-gray-500 transition hover:text-gray-600 cursor-pointer"
       >
         <ArrowLeft size={12} />
         Voltar
@@ -128,7 +128,7 @@ export function AdminTechnicianForm() {
             type="button"
             onClick={() => navigate("/admin/technicians")}
             className="rounded-md bg-gray-300 px-4 py-2 text-xs font-bold 
-                                  text-gray-600 transition hover:opacity-90"
+                                  text-gray-600 transition hover:opacity-90 cursor-pointer"
           >
             Cancelar
           </button>
@@ -137,7 +137,7 @@ export function AdminTechnicianForm() {
             type="submit"
             disabled={isSubmitting}
             className="rounded-md bg-gray-600 px-5 py-2 text-xs font-bold 
-                                  text-gray-100 transition hover:opacity-90 disabled:opacity-50"
+                                  text-gray-100 transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
           >
             {isSubmitting ? "Salvando..." : "Salvar"}
           </button>

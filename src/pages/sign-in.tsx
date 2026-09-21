@@ -90,7 +90,7 @@ export function SignIn() {
 
         {apiError && <span className="text-xs text-red-600">{apiError}</span>}
 
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} className="cursor-pointer">
           {isSubmitting ? "Entrando..." : "Entrar"}
         </Button>
       </form>
@@ -104,7 +104,7 @@ export function SignIn() {
         </div>
 
         <Link to="/sign-up">
-          <Button variant="secondary" type="button">
+          <Button variant="secondary" type="button" className="cursor-pointer">
             Criar conta
           </Button>
         </Link>
