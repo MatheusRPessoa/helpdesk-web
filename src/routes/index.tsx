@@ -11,6 +11,7 @@ import { AdminTechnicians } from "@/pages/admin/technicians";
 import { AdminTechnicianForm } from "@/pages/admin/technician-form";
 import { AdminCustomers } from "@/pages/admin/customers";
 import { UnderDevelopment } from "@/pages/under-development";
+import { AdminServices } from "@/pages/admin/services";
 
 export const router = createBrowserRouter([
   {
@@ -33,7 +34,9 @@ export const router = createBrowserRouter([
           { path: "/admin/technicians/new", element: <AdminTechnicianForm /> },
           { path: "/admin/technicians/:id", element: <AdminTechnicianForm /> },
           { path: "/admin/customers", element: <AdminCustomers /> },
+          { path: "/admin/services", element: <AdminServices /> },
           { path: "/admin/customers/:id", element: <UnderDevelopment /> },
+          { path: "/admin/services/:id", element: <UnderDevelopment /> },
         ],
       },
     ],
