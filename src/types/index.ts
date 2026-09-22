@@ -60,3 +60,10 @@ export interface Technician extends User {
 export interface Customer extends User {
   ticketsCount: number;
 }
+
+export interface Service {
+  id: string;
+  title: string;
+  price: string;
+  isActive: boolean;
+}
