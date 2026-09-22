@@ -36,7 +36,6 @@ export const router = createBrowserRouter([
           { path: "/admin/customers", element: <AdminCustomers /> },
           { path: "/admin/customers/:id", element: <UnderDevelopment /> },
           { path: "/admin/services", element: <AdminServices /> },
-          { path: "/admin/services/new", element: <UnderDevelopment /> },
           { path: "/admin/services/:id", element: <UnderDevelopment /> },
         ],
       },
