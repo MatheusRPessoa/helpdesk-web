@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Pencil, Plus, Ban, CircleCheck } from "lucide-react";
 import { isAxiosError } from "axios";
 
@@ -8,16 +7,21 @@ import { ActiveBadge } from "@/components/ui/active-badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/utils/format";
 import type { Service } from "@/types";
+import {
+  ServiceFormDialog,
+  type ServiceForm,
+} from "@/components/admin/service-form-dialog";
 
 export function AdminServices() {
-  const navigate = useNavigate();
-
   const [services, setServices] = useState<Service[]>([]);
   const [deactivating, setDeactivating] = useState<Service | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<Service | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -57,13 +61,58 @@ export function AdminServices() {
     setDeactivating(null);
   }
 
+  function openCreate() {
+    setEditing(null);
+    setFormError(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(service: Service) {
+    setEditing(service);
+    setFormError(null);
+    setFormOpen(true);
+  }
+
+  function closeForm() {
+    setFormOpen(false);
+    setEditing(null);
+    setFormError(null);
+  }
+
+  async function handleSaveService(values: ServiceForm) {
+    setFormError(null);
+
+    try {
+      const { data } = editing
+        ? await api.put<Service>(`/services/${editing.id}`, values)
+        : await api.post<Service>("/services", values);
+
+      setServices((current) => {
+        const exists = current.some((item) => item.id === data.id);
+
+        const next = exists
+          ? current.map((item) => (item.id === data.id ? data : item))
+          : [...current, data];
+
+        return next.sort((a, b) => a.title.localeCompare(b.title));
+      });
+
+      closeForm();
+    } catch (error) {
+      const message = isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined;
+      setFormError(message ?? "Erro ao salvar serviço");
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-225">
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-xl font-bold text-blue-900">Serviços</h1>
 
         <button
-          onClick={() => navigate("/admin/services/new")}
+          onClick={openCreate}
           className="flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 
                                text-xs font-bold text-gray-100 transition hover:opacity-90"
         >
@@ -145,9 +194,7 @@ export function AdminServices() {
 
                       <button
                         aria-label={`Editar ${service.title}`}
-                        onClick={() =>
-                          navigate(`/admin/services/${service.id}`)
-                        }
+                        onClick={() => openEdit(service)}
                         className="rounded-md bg-gray-200 p-1.5 transition hover:bg-gray-300"
                       >
                         <Pencil size={14} className="text-gray-600" />
@@ -170,6 +217,15 @@ export function AdminServices() {
         onConfirm={handleConfirmDeactivate}
         onCancel={() => setDeactivating(null)}
       />
+
+      {formOpen && (
+        <ServiceFormDialog
+          service={editing}
+          error={formError}
+          onCancel={closeForm}
+          onSave={handleSaveService}
+        />
+      )}
     </div>
   );
 }
