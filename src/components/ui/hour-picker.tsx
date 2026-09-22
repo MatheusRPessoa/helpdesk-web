@@ -1,3 +1,5 @@
+import { X } from "lucide-react";
+
 const PERIODS = [
   {
     label: "Manhã",
@@ -41,13 +43,14 @@ export function HourPicker({ selected, onChange }: HourPickerProps) {
                   key={hour}
                   type="button"
                   onClick={() => toggle(hour)}
-                  className={`rounded-full border px-3 py-1.5 text-xxs transition ${
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xxs transition ${
                     isSelected
-                      ? "border-blue-base bg-blue-light font-bold text-blue-base"
+                      ? "bg-blue-base font-bold text-white"
                       : "border-gray-300 text-gray-600 hover:border-gray-400"
                   }`}
                 >
                   {hour}
+                  {isSelected && <X size={12} />}
                 </button>
               );
             })}
