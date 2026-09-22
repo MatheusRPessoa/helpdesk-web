@@ -54,7 +54,10 @@ export function AdminCustomers() {
     setEditError(null);
 
     try {
-      const { data } = await api.put<Customer>(`/customers/${editing.id}`, values);
+      const { data } = await api.put<Customer>(
+        `/customers/${editing.id}`,
+        values,
+      );
       setCustomers((current) =>
         current.map((customer) =>
           customer.id === editing.id ? { ...customer, ...data } : customer,
@@ -126,7 +129,7 @@ export function AdminCustomers() {
                           setApiError(null);
                           setDeleting(customer);
                         }}
-                        className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200 cursor-pointer"
+                        className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
                         <Trash2 size={14} className="text-red-600" />
                       </button>
@@ -137,9 +140,9 @@ export function AdminCustomers() {
                           setEditError(null);
                           setEditing(customer);
                         }}
-                        className="cursor-pointer rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
+                        className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                       >
-                        <Pencil size={14} className="text-gray-600 cursor-pointer" />
+                        <Pencil size={14} className="text-gray-600" />
                       </button>
                     </div>
                   </td>
@@ -166,6 +169,7 @@ export function AdminCustomers() {
 
       {editing && (
         <EditCustomerDialog
+          key={editing.id}
           customer={editing}
           error={editError}
           onCancel={() => {

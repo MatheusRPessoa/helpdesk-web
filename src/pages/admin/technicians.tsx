@@ -30,7 +30,7 @@ export function AdminTechnicians() {
         <button
           onClick={() => navigate("/admin/technicians/new")}
           className="flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 
-                               text-xs font-bold text-gray-100 transition hover:opacity-90 cursor-pointer"
+                               text-xs font-bold text-gray-100 transition hover:opacity-90"
         >
           <Plus size={14} />
           Novo
@@ -87,7 +87,7 @@ export function AdminTechnicians() {
                       onClick={() =>
                         navigate(`/admin/technicians/${technician.id}`)
                       }
-                      className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200 cursor-pointer"
+                      className="rounded-md border border-gray-300 p-1.5 transition hover:bg-gray-200"
                     >
                       <Pencil size={14} className="text-gray-600" />
                     </button>

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,6 +29,7 @@ export function EditCustomerDialog({
   onCancel,
   onSave,
 }: EditCustomerDialogProps) {
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
@@ -36,6 +38,7 @@ export function EditCustomerDialog({
     resolver: zodResolver(schema),
     defaultValues: { name: customer.name, email: customer.email },
   });
+  const { ref: nameRegisterRef, ...nameField } = register("name");
 
   return (
     <Dialog
@@ -43,6 +46,7 @@ export function EditCustomerDialog({
       title="Editar cliente"
       onCancel={onCancel}
       isLoading={isSubmitting}
+      initialFocusRef={nameInputRef}
     >
       <form onSubmit={handleSubmit(onSave)} className="space-y-4 p-6">
         <UserBadge
@@ -55,7 +59,11 @@ export function EditCustomerDialog({
           autoComplete="name"
           disabled={isSubmitting}
           error={errors.name?.message}
-          {...register("name")}
+          {...nameField}
+          ref={(element) => {
+            nameRegisterRef(element);
+            nameInputRef.current = element;
+          }}
         />
         <Input
           label="E-mail"
@@ -72,7 +80,6 @@ export function EditCustomerDialog({
         )}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button
-            className="cursor-pointer"
             type="button"
             variant="secondary"
             disabled={isSubmitting}
@@ -81,7 +88,6 @@ export function EditCustomerDialog({
             Cancelar
           </Button>
           <Button
-            className="cursor-pointer"
             type="submit"
             disabled={isSubmitting}
             aria-busy={isSubmitting}
