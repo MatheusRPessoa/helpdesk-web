@@ -1,8 +1,8 @@
-import { useEffect, useId, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserBadge } from "@/components/ui/user-badge";
@@ -13,7 +13,7 @@ const schema = z.object({
   email: z.email("E-mail inválido"),
 });
 
-type CustomerForm = z.infer<typeof schema>;
+export type CustomerForm = z.infer<typeof schema>;
 
 interface EditCustomerDialogProps {
   customer: Customer;
@@ -28,8 +28,6 @@ export function EditCustomerDialog({
   onCancel,
   onSave,
 }: EditCustomerDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const titleId = useId();
   const {
     register,
     handleSubmit,
@@ -39,36 +37,13 @@ export function EditCustomerDialog({
     defaultValues: { name: customer.name, email: customer.email },
   });
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    const previousFocus = document.activeElement;
-    dialog.showModal();
-
-    return () => {
-      dialog.close();
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
-        previousFocus.focus();
-      }
-    };
-  }, []);
-
   return (
-    <dialog
-      ref={dialogRef}
-      aria-labelledby={titleId}
-      onCancel={(event) => {
-        event.preventDefault();
-        if (!isSubmitting) onCancel();
-      }}
-      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-[10px] border border-gray-300 bg-gray-100 p-0 backdrop:bg-gray-600/50"
+    <Dialog
+      open
+      title="Editar cliente"
+      onCancel={onCancel}
+      isLoading={isSubmitting}
     >
-      <div className="border-b border-gray-300 px-6 py-4">
-        <h2 id={titleId} className="text-lg font-bold text-blue-dark">
-          Editar cliente
-        </h2>
-      </div>
       <form onSubmit={handleSubmit(onSave)} className="space-y-4 p-6">
         <UserBadge
           name={customer.name}
@@ -77,7 +52,6 @@ export function EditCustomerDialog({
         />
         <Input
           label="Nome"
-          aria-label="Nome"
           autoComplete="name"
           disabled={isSubmitting}
           error={errors.name?.message}
@@ -85,7 +59,6 @@ export function EditCustomerDialog({
         />
         <Input
           label="E-mail"
-          aria-label="E-mail"
           type="email"
           autoComplete="email"
           disabled={isSubmitting}
@@ -117,6 +90,6 @@ export function EditCustomerDialog({
           </Button>
         </div>
       </form>
-    </dialog>
+    </Dialog>
   );
 }

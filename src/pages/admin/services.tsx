@@ -65,7 +65,7 @@ export function AdminServices() {
         <button
           onClick={() => navigate("/admin/services/new")}
           className="flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 
-                               text-xs font-bold text-gray-100 transition hover:opacity-90"
+                               text-xs font-bold text-gray-100 transition hover:opacity-90 cursor-pointer"
         >
           <Plus size={14} />
           Novo
@@ -128,7 +128,7 @@ export function AdminServices() {
                         }
                         disabled={togglingId !== null}
                         className="flex items-center gap-1.5 text-xxs text-gray-600 transition
-                                                         hover:text-gray-500 disabled:opacity-50"
+                                                         hover:text-gray-500 disabled:opacity-50 cursor-pointer"
                       >
                         {service.isActive ? (
                           <>
@@ -148,7 +148,7 @@ export function AdminServices() {
                         onClick={() =>
                           navigate(`/admin/services/${service.id}`)
                         }
-                        className="rounded-md bg-gray-200 p-1.5 transition hover:bg-gray-300"
+                        className="rounded-md bg-gray-200 p-1.5 transition hover:bg-gray-300 cursor-pointer"
                       >
                         <Pencil size={14} className="text-gray-600" />
                       </button>

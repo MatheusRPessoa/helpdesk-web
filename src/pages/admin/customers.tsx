@@ -4,7 +4,8 @@ import { Pencil, Trash2 } from "lucide-react";
 
 import { api } from "@/services/api";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { EditCustomerDialog } from "@/components/edit-customer-dialog";
+import { EditCustomerDialog } from "@/components/admin/edit-customer-dialog";
+import type { CustomerForm } from "@/components/admin/edit-customer-dialog";
 import { UserBadge } from "@/components/ui/user-badge";
 import type { Customer } from "@/types";
 
@@ -47,13 +48,13 @@ export function AdminCustomers() {
     }
   }
 
-  async function handleUpdate(values: Pick<Customer, "name" | "email">) {
+  async function handleUpdate(values: CustomerForm) {
     if (!editing) return;
 
     setEditError(null);
 
     try {
-      const { data } = await api.put(`/customers/${editing.id}`, values);
+      const { data } = await api.put<Customer>(`/customers/${editing.id}`, values);
       setCustomers((current) =>
         current.map((customer) =>
           customer.id === editing.id ? { ...customer, ...data } : customer,
@@ -167,7 +168,10 @@ export function AdminCustomers() {
         <EditCustomerDialog
           customer={editing}
           error={editError}
-          onCancel={() => setEditing(null)}
+          onCancel={() => {
+            setEditing(null);
+            setEditError(null);
+          }}
           onSave={handleUpdate}
         />
       )}

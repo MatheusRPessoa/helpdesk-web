@@ -9,7 +9,7 @@ export function UnderDevelopment() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mb-2 flex items-center gap-1 text-xxs text-gray-500 transition hover:text-gray-600"
+        className="mb-2 flex items-center gap-1 text-xxs text-gray-500 transition hover:text-gray-600 cursor-pointer"
       >
         <ArrowLeft size={12} />
         Voltar
