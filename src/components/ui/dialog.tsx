@@ -11,7 +11,7 @@ interface DialogProps {
   role?: "dialog" | "alertdialog";
   "aria-describedby"?: string;
   initialFocusRef?: RefObject<HTMLElement | null>;
-  onClose?: () => void;
+  showCloseButton?: boolean;
 }
 
 export function Dialog({
@@ -23,7 +23,7 @@ export function Dialog({
   role = "dialog",
   "aria-describedby": descriptionId,
   initialFocusRef,
-  onClose,
+  showCloseButton = false,
 }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -63,10 +63,10 @@ export function Dialog({
           {title}
         </h2>
 
-        {onClose && (
+        {showCloseButton && (
           <button
             type="button"
-            onClick={onClose}
+            onClick={onCancel}
             disabled={isLoading}
             aria-label="Fechar"
             className="text-gray-500 transition hover:text-gray-600 disabled:opacity-50"

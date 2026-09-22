@@ -1,31 +1,36 @@
-import { useRef, useState } from "react";
-import { isAxiosError } from "axios";
+import { useRef, useState, type ChangeEvent } from "react";
 
-import { api } from "@/services/api";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Service } from "@/types";
 
+export interface ServiceForm {
+  title: string;
+  price: number;
+}
+
 interface ServiceFormDialogProps {
   service?: Service | null;
-  onClose: () => void;
-  onSaved: (service: Service) => void
+  error: string | null;
+  onCancel: () => void;
+  onSave: (values: ServiceForm) => Promise<void>;
 }
 
 function parsePrice(value: string) {
-  const normalized = value
-    .replace(/\./g, "")
-    .replace(",", ".")   
-    .trim();
+  const trimmed = value.trim();
+  const normalized = trimmed.includes(",")
+    ? trimmed.replace(/\./g, "").replace(",", ".")
+    : trimmed;
 
   return Number(normalized);
 }
 
 export function ServiceFormDialog({
   service,
-  onClose,
-  onSaved,
+  error,
+  onCancel,
+  onSave,
 }: ServiceFormDialogProps) {
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,46 +38,39 @@ export function ServiceFormDialog({
   const [price, setPrice] = useState(
     service ? Number(service.price).toFixed(2).replace(".", ",") : "",
   );
-  const [error, setError] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  function handleChange(setter: (value: string) => void) {
-    return (event: { target: { value: string } }) => {
+  function handleChange(
+    setter: (value: string) => void,
+    clearError: (value: null) => void,
+  ) {
+    return (event: ChangeEvent<HTMLInputElement>) => {
       setter(event.target.value);
-      if (error) setError(null);
+      clearError(null);
     };
   }
 
   async function handleSubmit() {
     const parsedPrice = parsePrice(price);
 
-    if (title.trim().length < 3) {
-      setError("Título deve ter ao menos 3 caracteres");
-      return;
-    }
+    const nextTitleError =
+      title.trim().length < 3 ? "Título deve ter ao menos 3 caracteres" : null;
+    const nextPriceError =
+      Number.isNaN(parsedPrice) || parsedPrice <= 0
+        ? "Informe um valor maior que zero"
+        : null;
 
-    if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
-      setError("Informe um valor maior que zero");
-      return;
-    }
+    setTitleError(nextTitleError);
+    setPriceError(nextPriceError);
+
+    if (nextTitleError || nextPriceError) return;
 
     setIsSaving(true);
-    setError(null);
 
     try {
-      const payload = { title: title.trim(), price: parsedPrice };
-
-      const { data } = service
-        ? await api.put<Service>(`/services/${service.id}`, payload)
-        : await api.post<Service>("/services", payload);
-
-      onSaved(data);
-      onClose();
-    } catch (err) {
-      const message = isAxiosError(err)
-        ? err.response?.data?.message
-        : undefined;
-      setError(message ?? "Erro ao salvar serviço");
+      await onSave({ title: title.trim(), price: parsedPrice });
     } finally {
       setIsSaving(false);
     }
@@ -82,10 +80,10 @@ export function ServiceFormDialog({
     <Dialog
       open
       title={service ? "Editar serviço" : "Cadastro de serviço"}
-      onCancel={onClose}
+      onCancel={onCancel}
       isLoading={isSaving}
       initialFocusRef={titleInputRef}
-      onClose={onClose}
+      showCloseButton
     >
       <form
         onSubmit={(event) => {
@@ -96,20 +94,22 @@ export function ServiceFormDialog({
       >
         <div className="flex flex-col gap-4 px-6 py-5">
           <Input
-            id="service-title"
             ref={titleInputRef}
             label="Título"
             value={title}
-            onChange={handleChange(setTitle)}
+            onChange={handleChange(setTitle, setTitleError)}
+            disabled={isSaving}
+            error={titleError ?? undefined}
             placeholder="Nome do serviço"
           />
 
           <Input
-            id="service-price"
             label="Valor"
             leading="R$"
             value={price}
-            onChange={handleChange(setPrice)}
+            onChange={handleChange(setPrice, setPriceError)}
+            disabled={isSaving}
+            error={priceError ?? undefined}
             inputMode="decimal"
             placeholder="0,00"
           />
@@ -122,7 +122,7 @@ export function ServiceFormDialog({
         </div>
 
         <div className="px-6 pb-6">
-          <Button type="submit" disabled={isSaving}>
+          <Button type="submit" disabled={isSaving} aria-busy={isSaving}>
             {isSaving ? "Salvando..." : "Salvar"}
           </Button>
         </div>

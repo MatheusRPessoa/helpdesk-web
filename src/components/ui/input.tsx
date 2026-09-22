@@ -1,18 +1,21 @@
-import { forwardRef, type ComponentProps, type ReactNode } from "react"
+import { forwardRef, useId, type ComponentProps, type ReactNode } from "react";
 
 interface InputProps extends ComponentProps<"input"> {
-  label: string
-  error?: string
-  hint?: string
-  leading?: ReactNode
+  label: string;
+  error?: string;
+  hint?: string;
+  leading?: ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, hint, leading, id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+
     return (
       <div className="flex flex-col gap-1">
         <label
-          htmlFor={id}
+          htmlFor={inputId}
           className="text-xxs font-bold uppercase tracking-wider text-gray-500"
         >
           {label}
@@ -21,8 +24,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="flex items-center gap-2 border-b border-gray-400 transition focus-within:border-blue-base">
           {leading && <span className="text-sm text-gray-600">{leading}</span>}
           <input
-            id={id}
+            id={inputId}
             ref={ref}
+            aria-invalid={error ? true : undefined}
             className="w-full py-2 text-sm text-gray-600 outline-none placeholder:text-gray-400"
             {...props}
           />
@@ -34,8 +38,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <span className="text-xxs italic text-gray-400">{hint}</span>
         ) : null}
       </div>
-    )
+    );
   },
-)
+);
 
-Input.displayName = "Input"
+Input.displayName = "Input";

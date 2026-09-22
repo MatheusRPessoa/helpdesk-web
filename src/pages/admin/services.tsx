@@ -7,7 +7,10 @@ import { ActiveBadge } from "@/components/ui/active-badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/utils/format";
 import type { Service } from "@/types";
-import { ServiceFormDialog } from "@/components/ui/service-form-dialog";
+import {
+  ServiceFormDialog,
+  type ServiceForm,
+} from "@/components/admin/service-form-dialog";
 
 export function AdminServices() {
   const [services, setServices] = useState<Service[]>([]);
@@ -18,6 +21,7 @@ export function AdminServices() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Service | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -59,24 +63,47 @@ export function AdminServices() {
 
   function openCreate() {
     setEditing(null);
+    setFormError(null);
     setFormOpen(true);
   }
 
   function openEdit(service: Service) {
     setEditing(service);
+    setFormError(null);
     setFormOpen(true);
   }
 
-  function handleSaved(saved: Service) {
-    setServices((current) => {
-      const exists = current.some((item) => item.id === saved.id);
+  function closeForm() {
+    setFormOpen(false);
+    setEditing(null);
+    setFormError(null);
+  }
 
-      const next = exists
-        ? current.map((item) => (item.id === saved.id ? saved : item))
-        : [...current, saved];
+  async function handleSaveService(values: ServiceForm) {
+    setFormError(null);
 
-      return next.sort((a, b) => a.title.localeCompare(b.title));
-    });
+    try {
+      const { data } = editing
+        ? await api.put<Service>(`/services/${editing.id}`, values)
+        : await api.post<Service>("/services", values);
+
+      setServices((current) => {
+        const exists = current.some((item) => item.id === data.id);
+
+        const next = exists
+          ? current.map((item) => (item.id === data.id ? data : item))
+          : [...current, data];
+
+        return next.sort((a, b) => a.title.localeCompare(b.title));
+      });
+
+      closeForm();
+    } catch (error) {
+      const message = isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined;
+      setFormError(message ?? "Erro ao salvar serviço");
+    }
   }
 
   return (
@@ -194,8 +221,9 @@ export function AdminServices() {
       {formOpen && (
         <ServiceFormDialog
           service={editing}
-          onClose={() => setFormOpen(false)}
-          onSaved={handleSaved}
+          error={formError}
+          onCancel={closeForm}
+          onSave={handleSaveService}
         />
       )}
     </div>
