@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useId, useLayoutEffect, useRef } from "react";
 import type { ReactNode, RefObject, SyntheticEvent } from "react";
 
@@ -10,6 +11,7 @@ interface DialogProps {
   role?: "dialog" | "alertdialog";
   "aria-describedby"?: string;
   initialFocusRef?: RefObject<HTMLElement | null>;
+  onClose?: () => void;
 }
 
 export function Dialog({
@@ -21,6 +23,7 @@ export function Dialog({
   role = "dialog",
   "aria-describedby": descriptionId,
   initialFocusRef,
+  onClose,
 }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -55,10 +58,22 @@ export function Dialog({
       onCancel={handleCancel}
       className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-[10px] border border-gray-300 bg-gray-100 p-0 backdrop:bg-gray-600/50"
     >
-      <div className="border-b border-gray-300 px-6 py-4">
+      <div className="flex items-center justify-between border-b border-gray-300 px-6 py-4">
         <h2 id={titleId} className="text-lg font-bold text-blue-dark">
           {title}
         </h2>
+
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+            aria-label="Fechar"
+            className="text-gray-500 transition hover:text-gray-600 disabled:opacity-50"
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
       {children}
     </dialog>

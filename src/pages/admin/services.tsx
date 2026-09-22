@@ -7,7 +7,7 @@ import { ActiveBadge } from "@/components/ui/active-badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatCurrency } from "@/utils/format";
 import type { Service } from "@/types";
-import { ServiceFormDialog } from "@/components/service-form-dialog";
+import { ServiceFormDialog } from "@/components/ui/service-form-dialog";
 
 export function AdminServices() {
   const [services, setServices] = useState<Service[]>([]);
@@ -71,9 +71,11 @@ export function AdminServices() {
     setServices((current) => {
       const exists = current.some((item) => item.id === saved.id);
 
-      return exists
+      const next = exists
         ? current.map((item) => (item.id === saved.id ? saved : item))
-        : [...current, saved].sort((a, b) => a.title.localeCompare(b.title));
+        : [...current, saved];
+
+      return next.sort((a, b) => a.title.localeCompare(b.title));
     });
   }
 
@@ -189,13 +191,13 @@ export function AdminServices() {
         onCancel={() => setDeactivating(null)}
       />
 
-      <ServiceFormDialog
-        key={editing?.id ?? "new"}
-        open={formOpen}
-        service={editing}
-        onClose={() => setFormOpen(false)}
-        onSaved={handleSaved}
-      />
+      {formOpen && (
+        <ServiceFormDialog
+          service={editing}
+          onClose={() => setFormOpen(false)}
+          onSaved={handleSaved}
+        />
+      )}
     </div>
   );
 }
