@@ -102,7 +102,9 @@ export function TechnicianTickets() {
                           ? actionError.message
                           : undefined
                       }
-                      onOpen={() => navigate(`/technician/tickets/${ticket.id}`)}
+                      onOpen={() =>
+                        navigate(`/technician/tickets/${ticket.id}`)
+                      }
                       onStart={() => changeStatus(ticket, "IN_PROGRESS")}
                       onFinish={() => setFinishing(ticket)}
                     />

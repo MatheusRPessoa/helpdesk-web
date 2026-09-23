@@ -1,13 +1,13 @@
-import { Circle, Clock, CheckCircle2, type LucideIcon } from "lucide-react"
+import { Circle, Clock, CheckCircle2, type LucideIcon } from "lucide-react";
 
-import type { BadgeVariant } from "@/components/ui/badge"
-import type { TicketStatus } from "@/types"
+import type { BadgeVariant } from "@/components/ui/badge";
+import type { TicketStatus } from "@/types";
 
 interface TicketStatusConfig {
-  label: string
-  variant: BadgeVariant
-  Icon: LucideIcon
-  iconClassName: string
+  label: string;
+  variant: BadgeVariant;
+  Icon: LucideIcon;
+  iconClassName: string;
 }
 
 export const TICKET_STATUS: Record<TicketStatus, TicketStatusConfig> = {
@@ -29,4 +29,4 @@ export const TICKET_STATUS: Record<TicketStatus, TicketStatusConfig> = {
     Icon: CheckCircle2,
     iconClassName: "text-green-700",
   },
-}
+};

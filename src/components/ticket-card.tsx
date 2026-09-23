@@ -3,25 +3,30 @@ import { Pencil, Play, CheckCircle2, type LucideIcon } from "lucide-react";
 import { UserBadge } from "./ui/user-badge";
 import { formatCurrency, formatDate } from "@/utils/format";
 import type { Ticket } from "@/types";
-import { TICKET_STATUS } from "@/config/ticket-status"
+import { TICKET_STATUS } from "@/config/ticket-status";
 
 interface TicketCardProps {
   ticket: Ticket;
   onOpen: () => void;
   onStart?: () => void;
-  onFinish?: () => void
+  onFinish?: () => void;
   isUpdating?: boolean;
-  error?: string
+  error?: string;
 }
 
 interface ActionButtonProps {
-  icon: LucideIcon
-  label: string
-  onClick: () => void
-  disabled?: boolean
+  icon: LucideIcon;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
 }
 
-function ActionButton({ icon: Icon, label, onClick, disabled }: ActionButtonProps) {
+function ActionButton({
+  icon: Icon,
+  label,
+  onClick,
+  disabled,
+}: ActionButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -31,7 +36,7 @@ function ActionButton({ icon: Icon, label, onClick, disabled }: ActionButtonProp
       <Icon size={12} />
       {label}
     </button>
-  )
+  );
 }
 
 export function TicketCard({
@@ -42,7 +47,7 @@ export function TicketCard({
   isUpdating,
   error,
 }: TicketCardProps) {
-  const { Icon, iconClassName } = TICKET_STATUS[ticket.status]
+  const { Icon, iconClassName } = TICKET_STATUS[ticket.status];
 
   return (
     <article className="flex flex-col gap-3 rounded-[10px] border border-gray-300 bg-gray-100 p-4">
@@ -93,7 +98,7 @@ export function TicketCard({
           {formatCurrency(ticket.total)}
         </span>
       </div>
-      
+
       {error && (
         <p role="alert" className="text-xxs text-red-600">
           {error}

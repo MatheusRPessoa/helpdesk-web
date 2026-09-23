@@ -9,7 +9,7 @@ const ROLE_LABEL: Record<UserRole, string> = {
   ADMIN: "ADMIN",
   TECHNICIAN: "TÉCNICO",
   CUSTOMER: "CLIENTE",
-}
+};
 
 export interface SidebarLink {
   to: string;
