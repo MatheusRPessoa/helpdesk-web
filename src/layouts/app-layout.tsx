@@ -1,11 +1,16 @@
 import { Outlet } from "react-router-dom";
-import { AdminSidebar } from "@/components/admin-sidebar";
 
-export function AdminLayout() {
+import { Sidebar, type SidebarLink } from "@/components/sidebar";
+
+interface AppLayoutProps {
+  links: SidebarLink[];
+}
+
+export function AppLayout({ links }: AppLayoutProps) {
   return (
     <div className="flex min-h-screen bg-blue-dark">
       <div className="hidden lg:block">
-        <AdminSidebar />
+        <Sidebar links={links} />
       </div>
 
       <main className="flex-1 overflow-auto rounded-tl-[10px] bg-gray-200 px-10 py-12 lg:mt-3">

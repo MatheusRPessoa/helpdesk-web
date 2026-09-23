@@ -4,13 +4,15 @@ import { AuthLayout } from "@/layouts/auth-layout";
 import { SignIn } from "@/pages/sign-in";
 import { ProtectedRoute } from "./protected-route";
 import { SignUp } from "@/pages/sign-up";
-import { AdminLayout } from "@/layouts/admin-layout";
 import { AdminTickets } from "@/pages/admin/tickets";
 import { AdminTicketDetail } from "@/pages/admin/ticket-detail";
 import { AdminTechnicians } from "@/pages/admin/technicians";
 import { AdminTechnicianForm } from "@/pages/admin/technician-form";
 import { AdminCustomers } from "@/pages/admin/customers";
 import { AdminServices } from "@/pages/admin/services";
+import { AppLayout } from "@/layouts/app-layout";
+import { ADMIN_LINKS, TECHNICIAN_LINKS } from "@/config/navigation";
+import { TechnicianTickets } from "@/pages/technician/tickets";
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +27,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
     children: [
       {
-        element: <AdminLayout />,
+        element: <AppLayout links={ADMIN_LINKS} />,
         children: [
           { path: "/admin/tickets", element: <AdminTickets /> },
           { path: "/admin/tickets/:id", element: <AdminTicketDetail /> },
@@ -42,8 +44,10 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["TECHNICIAN"]} />,
     children: [
       {
-        path: "/technician/tickets",
-        element: <div>Painel do Técnico</div>,
+        element: <AppLayout links={TECHNICIAN_LINKS} />,
+        children: [
+          { path: "/technician/tickets", element: <TechnicianTickets /> },
+        ],
       },
     ],
   },
