@@ -5,6 +5,7 @@ import { isAxiosError } from "axios";
 import { api } from "@/services/api";
 import { TicketCard } from "@/components/ticket-card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { Ticket, TicketStatus } from "@/types";
 
 const GROUPS: TicketStatus[] = ["IN_PROGRESS", "OPEN", "CLOSED"];
@@ -16,7 +17,11 @@ export function TechnicianTickets() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [finishing, setFinishing] = useState<Ticket | null>(null);
+  const [actionError, setActionError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     api
@@ -28,7 +33,7 @@ export function TechnicianTickets() {
 
   async function changeStatus(ticket: Ticket, status: TicketStatus) {
     setUpdatingId(ticket.id);
-    setApiError(null);
+    setActionError(null);
 
     try {
       const { data } = await api.patch<Ticket>(`/tickets/${ticket.id}/status`, {
@@ -42,21 +47,26 @@ export function TechnicianTickets() {
       const message = isAxiosError(error)
         ? error.response?.data?.message
         : undefined;
-      setApiError(message ?? "Erro ao alterar status do chamado");
+
+      setActionError({
+        id: ticket.id,
+        message: message ?? "Erro ao alterar status do chamado",
+      });
     } finally {
       setUpdatingId(null);
     }
   }
 
+  async function handleConfirmFinish() {
+    if (!finishing) return;
+
+    await changeStatus(finishing, "CLOSED");
+    setFinishing(null);
+  }
+
   return (
     <div className="w-full max-w-225">
       <h1 className="mb-5 text-xl font-bold text-blue-dark">Meus chamados</h1>
-
-      {apiError && (
-        <p role="alert" className="mb-3 text-xs text-red-600">
-          {apiError}
-        </p>
-      )}
 
       {isLoading ? (
         <p className="text-sm text-gray-500">Carregando...</p>
@@ -87,11 +97,14 @@ export function TechnicianTickets() {
                       key={ticket.id}
                       ticket={ticket}
                       isUpdating={updatingId === ticket.id}
-                      onOpen={() =>
-                        navigate(`/technicians/tickets/${ticket.id}`)
+                      error={
+                        actionError?.id === ticket.id
+                          ? actionError.message
+                          : undefined
                       }
+                      onOpen={() => navigate(`/technician/tickets/${ticket.id}`)}
                       onStart={() => changeStatus(ticket, "IN_PROGRESS")}
-                      onClose={() => changeStatus(ticket, "CLOSED")}
+                      onFinish={() => setFinishing(ticket)}
                     />
                   ))}
                 </div>
@@ -99,6 +112,18 @@ export function TechnicianTickets() {
             );
           })}
         </div>
+      )}
+
+      {finishing && (
+        <ConfirmDialog
+          open
+          title="Encerrar chamado"
+          description={`Confirmar o encerramento de "${finishing.title}"? O chamado sairá dos seus atendimentos em andamento.`}
+          confirmText="Encerrar"
+          isLoading={updatingId !== null}
+          onConfirm={handleConfirmFinish}
+          onCancel={() => setFinishing(null)}
+        />
       )}
     </div>
   );

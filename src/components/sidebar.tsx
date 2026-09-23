@@ -3,6 +3,13 @@ import type { LucideIcon } from "lucide-react";
 
 import logoIcon from "@/assets/logo-icon.svg";
 import { useAuth } from "@/hooks/use-auth";
+import type { UserRole } from "@/types";
+
+const ROLE_LABEL: Record<UserRole, string> = {
+  ADMIN: "ADMIN",
+  TECHNICIAN: "TÉCNICO",
+  CUSTOMER: "CLIENTE",
+}
 
 export interface SidebarLink {
   to: string;
@@ -11,11 +18,10 @@ export interface SidebarLink {
 }
 
 interface SidebarProps {
-  role: string;
   links: SidebarLink[];
 }
 
-export function Sidebar({ role, links }: SidebarProps) {
+export function Sidebar({ links }: SidebarProps) {
   const { user, signOut } = useAuth();
 
   const initials = user?.name
@@ -35,7 +41,7 @@ export function Sidebar({ role, links }: SidebarProps) {
               HelpDesk
             </span>
             <span className="text-xxs tracking-[0.2em] text-blue-light">
-              {role}
+              {user && ROLE_LABEL[user.role]}
             </span>
           </div>
         </div>

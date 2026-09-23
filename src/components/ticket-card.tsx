@@ -1,31 +1,48 @@
-import { Pencil, Play, CheckCircle2, Circle, Clock } from "lucide-react";
+import { Pencil, Play, CheckCircle2, type LucideIcon } from "lucide-react";
 
 import { UserBadge } from "./ui/user-badge";
 import { formatCurrency, formatDate } from "@/utils/format";
 import type { Ticket } from "@/types";
+import { TICKET_STATUS } from "@/config/ticket-status"
 
 interface TicketCardProps {
   ticket: Ticket;
   onOpen: () => void;
   onStart?: () => void;
-  onClose?: () => void;
+  onFinish?: () => void
   isUpdating?: boolean;
+  error?: string
 }
 
-const statusIcon = {
-  OPEN: { Icon: Circle, className: "text-red-600" },
-  IN_PROGRESS: { Icon: Clock, className: "text-blue-base" },
-  CLOSED: { Icon: CheckCircle2, className: "text-green-700" },
-};
+interface ActionButtonProps {
+  icon: LucideIcon
+  label: string
+  onClick: () => void
+  disabled?: boolean
+}
+
+function ActionButton({ icon: Icon, label, onClick, disabled }: ActionButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="flex items-center gap-1.5 rounded-md bg-gray-600 px-2.5 py-1.5 text-xxs font-bold text-gray-100 transition hover:opacity-90 disabled:opacity-50"
+    >
+      <Icon size={12} />
+      {label}
+    </button>
+  )
+}
 
 export function TicketCard({
   ticket,
   onOpen,
   onStart,
-  onClose,
+  onFinish,
   isUpdating,
+  error,
 }: TicketCardProps) {
-  const { Icon, className } = statusIcon[ticket.status];
+  const { Icon, iconClassName } = TICKET_STATUS[ticket.status]
 
   return (
     <article className="flex flex-col gap-3 rounded-[10px] border border-gray-300 bg-gray-100 p-4">
@@ -42,25 +59,21 @@ export function TicketCard({
           </button>
 
           {ticket.status === "OPEN" && onStart && (
-            <button
+            <ActionButton
+              icon={Play}
+              label="Iniciar"
               onClick={onStart}
               disabled={isUpdating}
-              className="flex items-center gap-1.5 rounded-md bg-gray-600 px-2.5 py-1.5 text-xxs font-bold text-gray-100 transition hover:opacity-90 disabled:opacity-50"
-            >
-              <Play size={12} />
-              Iniciar
-            </button>
+            />
           )}
 
-          {ticket.status === "IN_PROGRESS" && onClose && (
-            <button
-              onClick={onClose}
+          {ticket.status === "IN_PROGRESS" && onFinish && (
+            <ActionButton
+              icon={CheckCircle2}
+              label="Encerrar"
+              onClick={onFinish}
               disabled={isUpdating}
-              className="flex items-center gap-1.5 rounded-md bg-gray-600 px-2.5 py-1.5 text-xxs font-bold text-gray-100 transition hover:opacity-90 disabled:opacity-50"
-            >
-              <CheckCircle2 size={12} />
-              Encerrar
-            </button>
+            />
           )}
         </div>
       </div>
@@ -80,13 +93,19 @@ export function TicketCard({
           {formatCurrency(ticket.total)}
         </span>
       </div>
+      
+      {error && (
+        <p role="alert" className="text-xxs text-red-600">
+          {error}
+        </p>
+      )}
 
       <div className="flex items-center justify-between border-t border-gray-300 pt-3">
         <UserBadge
           name={ticket.customer.name}
           avatarUrl={ticket.customer.avatarUrl}
         />
-        <Icon size={16} className={className} />
+        <Icon size={16} className={iconClassName} />
       </div>
     </article>
   );

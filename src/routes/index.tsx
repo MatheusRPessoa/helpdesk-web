@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
     children: [
       {
-        element: <AppLayout role="ADMIN" links={ADMIN_LINKS} />,
+        element: <AppLayout links={ADMIN_LINKS} />,
         children: [
           { path: "/admin/tickets", element: <AdminTickets /> },
           { path: "/admin/tickets/:id", element: <AdminTicketDetail /> },
@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute allowedRoles={["TECHNICIAN"]} />,
     children: [
       {
-        element: <AppLayout role="TÉCNICO" links={TECHNICIAN_LINKS} />,
+        element: <AppLayout links={TECHNICIAN_LINKS} />,
         children: [
           { path: "/technician/tickets", element: <TechnicianTickets /> },
         ],

@@ -1,6 +1,6 @@
 import { ClipboardList, Wrench, Users, Briefcase } from "lucide-react";
 
-import type { SidebarLink } from "@/components/ui/sidebar";
+import type { SidebarLink } from "@/components/sidebar";
 
 export const ADMIN_LINKS: SidebarLink[] = [
   { to: "/admin/tickets", label: "Chamados", icon: ClipboardList },
