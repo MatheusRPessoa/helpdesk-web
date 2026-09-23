@@ -14,5 +14,5 @@ export const TECHNICIAN_LINKS: SidebarLink[] = [
 ];
 
 export const CUSTOMER_LINKS: SidebarLink[] = [
-  { to: "/tickets", label: "Meus chamados", icon: ClipboardList },
+  { to: "/customers/tickets", label: "Meus chamados", icon: ClipboardList },
 ];
