@@ -11,9 +11,15 @@ import { AdminTechnicianForm } from "@/pages/admin/technician-form";
 import { AdminCustomers } from "@/pages/admin/customers";
 import { AdminServices } from "@/pages/admin/services";
 import { AppLayout } from "@/layouts/app-layout";
-import { ADMIN_LINKS, TECHNICIAN_LINKS, CUSTOMER_LINKS } from "@/config/navigation";
+import {
+  ADMIN_LINKS,
+  TECHNICIAN_LINKS,
+  CUSTOMER_LINKS,
+} from "@/config/navigation";
 import { CustomerTickets } from "@/pages/customer/tickets";
 import { TechnicianTickets } from "@/pages/technician/tickets";
+import { CustomerCreateTicket } from "@/pages/customer/create-ticket";
+import { CustomerTicketDetail } from "@/pages/customer/ticket-detail";
 
 export const router = createBrowserRouter([
   {
@@ -58,7 +64,9 @@ export const router = createBrowserRouter([
       {
         element: <AppLayout links={CUSTOMER_LINKS} />,
         children: [
-          { path: "/customers/tickets", element: <CustomerTickets />},
+          { path: "/customers/tickets", element: <CustomerTickets /> },
+          { path: "/customers/tickets/:id", element: <CustomerTicketDetail /> },
+          { path: "/customers/tickets/new", element: <CustomerCreateTicket /> },
         ],
       },
     ],
