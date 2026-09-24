@@ -15,4 +15,5 @@ export const TECHNICIAN_LINKS: SidebarLink[] = [
 
 export const CUSTOMER_LINKS: SidebarLink[] = [
   { to: "/customers/tickets", label: "Meus chamados", icon: ClipboardList },
+  { to: "/customers/tickets/new", label: "Criar chamado", icon: Plus },
 ];

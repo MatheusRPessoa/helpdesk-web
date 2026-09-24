@@ -18,6 +18,8 @@ import {
 } from "@/config/navigation";
 import { CustomerTickets } from "@/pages/customer/tickets";
 import { TechnicianTickets } from "@/pages/technician/tickets";
+import { CustomerCreateTicket } from "@/pages/customer/create-ticket";
+import { CustomerTicketDetail } from "@/pages/customer/ticket-detail";
 import { TechnicianTicketDetail } from "@/pages/technician/ticket-detail";
 import { CustomerTicketDetail } from "@/pages/customer/ticket-detail";
 import { CustomerCreateTicket } from "@/pages/customer/create-ticket";
