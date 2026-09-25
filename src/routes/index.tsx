@@ -13,6 +13,7 @@ import { AdminServices } from "@/pages/admin/services";
 import { AppLayout } from "@/layouts/app-layout";
 import { ADMIN_LINKS, TECHNICIAN_LINKS } from "@/config/navigation";
 import { TechnicianTickets } from "@/pages/technician/tickets";
+import { TechnicianTicketDetail } from "@/pages/technician/ticket-detail";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
         element: <AppLayout links={TECHNICIAN_LINKS} />,
         children: [
           { path: "/technician/tickets", element: <TechnicianTickets /> },
+          {
+            path: "/technician/tickets/:id",
+            element: <TechnicianTicketDetail />,
+          },
         ],
       },
     ],
