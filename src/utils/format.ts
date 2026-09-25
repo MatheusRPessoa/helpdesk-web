@@ -14,3 +14,10 @@ export function formatCurrency(value: string) {
     currency: "BRL",
   });
 }
+
+export function formatPriceInput(value: string | number) {
+  return Number(value).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
