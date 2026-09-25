@@ -42,8 +42,8 @@ export function SignIn() {
         navigate("/admin/tickets");
       } else if (user.role === "TECHNICIAN") {
         navigate("/technician/tickets");
-      } else {
-        navigate("/tickets");
+      } else if (user.role === "CUSTOMER") {
+        navigate("/customers/tickets");
       }
     } catch (error) {
       if (isAxiosError(error)) {
