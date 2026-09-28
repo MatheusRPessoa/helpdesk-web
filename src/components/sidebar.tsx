@@ -31,7 +31,7 @@ export function Sidebar({ links }: SidebarProps) {
     if (!isUserMenuOpen) {
       return;
     }
-    
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsUserMenuOpen(false);
