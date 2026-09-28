@@ -69,7 +69,6 @@ export function Sidebar({ links }: SidebarProps) {
           ))}
         </nav>
       </div>
-      
 
       {/* Usuário e menu */}
       <div className="relative border-t border-gray-600/20 px-3 pb-2 pt-4">
