@@ -51,6 +51,7 @@ export function Sidebar({ links }: SidebarProps) {
             <NavLink
               key={to}
               to={to}
+              end={to === "/customers/tickets"}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition ${
                   isActive

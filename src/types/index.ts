@@ -67,3 +67,7 @@ export interface Service {
   price: string;
   isActive: boolean;
 }
+
+export interface Customer extends User {
+  ticketsCount: number;
+}

@@ -38,7 +38,7 @@ export function SignUp() {
     try {
       await api.post("/customers", data);
       await signIn(data.email, data.password);
-      navigate("/tickets");
+      navigate("/customers/tickets");
     } catch (error) {
       if (isAxiosError(error)) {
         setApiError(error.response?.data.message ?? "Erro ao criar conta");
