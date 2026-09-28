@@ -54,7 +54,7 @@ export function TechnicianTicketDetail() {
   async function handleRemove() {
     if (!removing) return;
 
-    setIsLoading(true);
+    setIsUpdating(true);
     setActionError(null);
 
     try {
@@ -165,7 +165,7 @@ export function TechnicianTicketDetail() {
             </div>
 
             <div className="mb-4">
-              <p className="mb-1 text-xxs text-gray-500">Caregoria</p>
+              <p className="mb-1 text-xxs text-gray-500">Categoria</p>
               <p className="text-xs text-gray-600">
                 {baseServices[0]?.service.title}
               </p>
