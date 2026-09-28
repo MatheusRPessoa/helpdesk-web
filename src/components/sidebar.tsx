@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
+import { UserRound, LogOut } from "lucide-react";
 
 import logoIcon from "@/assets/logo-icon.svg";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,6 +25,7 @@ interface SidebarProps {
 
 export function Sidebar({ links }: SidebarProps) {
   const { user, signOut } = useAuth();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const initials = user?.name
     .split(" ")
@@ -65,29 +68,87 @@ export function Sidebar({ links }: SidebarProps) {
           ))}
         </nav>
       </div>
+      
 
-      <button
-        onClick={signOut}
-        className="flex items-center gap-3 border-t border-gray-600/20 px-6 pb-2 pt-5 text-left transition hover:bg-white/5"
-      >
-        {user?.avatarUrl ? (
-          <img
-            src={`${import.meta.env.VITE_API_URL}/files/${user.avatarUrl}`}
-            alt=""
-            className="h-8 w-8 rounded-full object-cover"
-          />
-        ) : (
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-base text-xxs font-bold text-gray-100">
-            {initials}
+      {/* Usuário e menu */}
+      <div className="relative border-t border-gray-600/20 px-3 pb-2 pt-4">
+        <button
+          type="button"
+          onClick={() => setIsUserMenuOpen((prev) => !prev)}
+          aria-expanded={isUserMenuOpen}
+          aria-haspopup="menu"
+          aria-label="Abrir opções do usuário"
+          className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition hover:bg-white/5"
+        >
+          {user?.avatarUrl ? (
+            <img
+              src={`${import.meta.env.VITE_API_URL}/files/${user.avatarUrl}`}
+              alt=""
+              className="h-8 w-8 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-base text-xxs font-bold text-gray-100">
+              {initials}
+            </span>
+          )}
+
+          <span className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <span className="truncate text-xs font-bold text-gray-100">
+              {user?.name}
+            </span>
+            <span className="truncate text-xxs text-gray-400">
+              {user?.email}
+            </span>
           </span>
+        </button>
+
+        {isUserMenuOpen && (
+          <>
+            {/* Fundo escurecido */}
+            <button
+              type="button"
+              aria-label="Fechar menu"
+              onClick={() => setIsUserMenuOpen(false)}
+              className="fixed inset-0 z-40 cursor-default bg-black/50"
+            />
+
+            {/* Menu de opções */}
+            <div
+              role="menu"
+              className="absolute bottom-0 left-[calc(100%+8px)] z-50 w-44 overflow-hidden rounded-lg border border-gray-600/20 bg-blue-dark p-1.5 shadow-xl"
+            >
+              <p className="px-2.5 pb-2 pt-2 text-[9px] font-medium tracking-wider text-gray-500">
+                OPÇÕES
+              </p>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => setIsUserMenuOpen(false)}
+                className="flex w-full items-center gap-3 rounded-md px-2.5 py-2.5 text-left text-xs text-gray-300 transition hover:bg-white/5 hover:text-gray-100"
+              >
+                <UserRound size={16} className="shrink-0 text-gray-400" />
+                Perfil
+              </button>
+
+              <div className="my-1 border-t border-gray-600/20" />
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setIsUserMenuOpen(false);
+                  signOut();
+                }}
+                className="flex w-full items-center gap-3 rounded-md px-2.5 py-2.5 text-left text-xs text-red-500 transition hover:bg-red-500/10"
+              >
+                <LogOut size={16} className="shrink-0" />
+                Sair
+              </button>
+            </div>
+          </>
         )}
-        <span className="flex flex-col overflow-hidden">
-          <span className="truncate text-xs font-bold text-gray-100">
-            {user?.name}
-          </span>
-          <span className="truncate text-xxs text-gray-400">{user?.email}</span>
-        </span>
-      </button>
+      </div>
     </aside>
   );
 }
