@@ -18,8 +18,7 @@ import {
 } from "@/config/navigation";
 import { CustomerTickets } from "@/pages/customer/tickets";
 import { TechnicianTickets } from "@/pages/technician/tickets";
-import { CustomerCreateTicket } from "@/pages/customer/create-ticket";
-import { CustomerTicketDetail } from "@/pages/customer/ticket-detail";
+import { TechnicianTicketDetail } from "@/pages/technician/ticket-detail";
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +53,10 @@ export const router = createBrowserRouter([
         element: <AppLayout links={TECHNICIAN_LINKS} />,
         children: [
           { path: "/technician/tickets", element: <TechnicianTickets /> },
+          {
+            path: "/technician/tickets/:id",
+            element: <TechnicianTicketDetail />,
+          },
         ],
       },
     ],
