@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { UserRound, LogOut } from "lucide-react";
+import { ProfileModal } from "@/components/profile-modal";
 
 import logoIcon from "@/assets/logo-icon.svg";
 import { useAuth } from "@/hooks/use-auth";
 import type { UserRole } from "@/types";
+import { api } from "@/services/api";
 
 const ROLE_LABEL: Record<UserRole, string> = {
   ADMIN: "ADMIN",
@@ -23,32 +25,82 @@ interface SidebarProps {
   links: SidebarLink[];
 }
 
+interface ProfileResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatarUrl: string | null;
+  mustChangePassword: boolean;
+  availabilities: {
+    hour: string;
+  }[];
+}
+
 export function Sidebar({ links }: SidebarProps) {
   const { user, signOut } = useAuth();
+  const userId = user?.id;
+
+  const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const profile = profileData?.id === userId ? profileData : null;
+
+  const fetchProfile = useCallback(
+    async (signal?: AbortSignal): Promise<void> => {
+      if (!userId) return;
+
+      try {
+        const response = await api.get<ProfileResponse>("/users/me", {
+          signal,
+        });
+
+        if (!signal?.aborted) {
+          setProfileData(response.data);
+        }
+      } catch (error) {
+        if (signal?.aborted) return;
+
+        console.error("Erro ao buscar perfil:", error);
+        setProfileData(null);
+      }
+    },
+    [userId],
+  );
 
   useEffect(() => {
-    if (!isUserMenuOpen) {
-      return;
-    }
+    if (!userId) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsUserMenuOpen(false);
-      }
-    };
+    const controller = new AbortController();
 
-    document.addEventListener("keydown", handleKeyDown);
+    api
+      .get<ProfileResponse>("/users/me", {
+        signal: controller.signal,
+      })
+      .then((response) => {
+        if (controller.signal.aborted) return;
+
+        setProfileData(response.data);
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+
+        console.error("Erro ao buscar perfil:", error);
+        setProfileData(null);
+      });
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      controller.abort();
     };
-  }, [isUserMenuOpen]);
+  }, [userId]);
 
-  const initials = user?.name
-    .split(" ")
+  const initials = (profile?.name ?? user?.name ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0])
+    .map((part) => part.charAt(0))
     .join("")
     .toUpperCase();
 
@@ -87,7 +139,6 @@ export function Sidebar({ links }: SidebarProps) {
         </nav>
       </div>
 
-      {/* Usuário e menu */}
       <div className="relative border-t border-gray-600/20 px-3 pb-2 pt-4">
         <button
           type="button"
@@ -97,9 +148,9 @@ export function Sidebar({ links }: SidebarProps) {
           aria-label="Abrir opções do usuário"
           className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition hover:bg-white/5"
         >
-          {user?.avatarUrl ? (
+          {profile?.avatarUrl ? (
             <img
-              src={`${import.meta.env.VITE_API_URL}/files/${user.avatarUrl}`}
+              src={`${import.meta.env.VITE_API_URL}/files/${profile.avatarUrl}`}
               alt=""
               className="h-8 w-8 shrink-0 rounded-full object-cover"
             />
@@ -111,17 +162,16 @@ export function Sidebar({ links }: SidebarProps) {
 
           <span className="flex min-w-0 flex-1 flex-col overflow-hidden">
             <span className="truncate text-xs font-bold text-gray-100">
-              {user?.name}
+              {profile?.name ?? user?.name}
             </span>
             <span className="truncate text-xxs text-gray-400">
-              {user?.email}
+              {profile?.email ?? user?.email}
             </span>
           </span>
         </button>
 
         {isUserMenuOpen && (
           <>
-            {/* Fundo escurecido */}
             <button
               type="button"
               aria-label="Fechar menu"
@@ -129,7 +179,6 @@ export function Sidebar({ links }: SidebarProps) {
               className="fixed inset-0 z-40 cursor-default bg-black/50"
             />
 
-            {/* Menu de opções */}
             <div
               role="menu"
               className="absolute bottom-0 left-[calc(100%+8px)] z-50 w-44 overflow-hidden rounded-lg border border-gray-600/20 bg-blue-dark p-1.5 shadow-xl"
@@ -141,7 +190,10 @@ export function Sidebar({ links }: SidebarProps) {
               <button
                 type="button"
                 role="menuitem"
-                onClick={() => setIsUserMenuOpen(false)}
+                onClick={() => {
+                  setIsUserMenuOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
                 className="flex w-full items-center gap-3 rounded-md px-2.5 py-2.5 text-left text-xs text-gray-300 transition hover:bg-white/5 hover:text-gray-100"
               >
                 <UserRound size={16} className="shrink-0 text-gray-400" />
@@ -164,6 +216,13 @@ export function Sidebar({ links }: SidebarProps) {
               </button>
             </div>
           </>
+        )}
+
+        {isProfileModalOpen && (
+          <ProfileModal
+            onClose={() => setIsProfileModalOpen(false)}
+            onProfileUpdated={fetchProfile}
+          />
         )}
       </div>
     </aside>
