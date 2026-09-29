@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { UserRound, LogOut } from "lucide-react";
@@ -7,7 +8,6 @@ import logoIcon from "@/assets/logo-icon.svg";
 import { useAuth } from "@/hooks/use-auth";
 import type { UserRole } from "@/types";
 import { api } from "@/services/api";
-import { useEffect, useState } from "react";
 
 const ROLE_LABEL: Record<UserRole, string> = {
   ADMIN: "ADMIN",
