@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { ImagePlus, Trash2, X } from "lucide-react";
 import { isAxiosError } from "axios";
@@ -14,22 +13,24 @@ interface ProfileModalProps {
 }
 
 interface ProfileResponse {
-    id: string;
-    name: string;
-    email: string;
-    role: UserRole;
-    avatarUrl: string | null;
-    mustChangePassword: boolean;
-    availabilities: {
-        hour: string;
-    }[];
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatarUrl: string | null;
+  mustChangePassword: boolean;
+  availabilities: {
+    hour: string;
+  }[];
 }
 
 export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
   const { user } = useAuth();
+  const userId = user?.id;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [availabilities, setAvailabilities] = useState<string[]>([]);
-  const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
 
@@ -46,42 +47,52 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
   const [passwordSuccess, setPasswordSuccess] = useState("");
 
   useEffect(() => {
-    if (!user) {
-      setProfile(null);
-      setAvailabilities([]);
-      return;
-    }
+    if (!userId) return;
 
-    const fetchProfile = async () => {
-      setIsLoadingAvailability(true);
+    const controller = new AbortController();
 
+    const loadProfile = async () => {
       try {
-        const response = await api.get<ProfileResponse>("/users/me");
+        const response = await api.get<ProfileResponse>("/users/me", {
+          signal: controller.signal,
+        });
+
+        if (controller.signal.aborted) return;
 
         setProfile(response.data);
 
         setAvailabilities(
           response.data.role === "TECHNICIAN"
-            ? response.data.availabilities.map(({ hour }) => hour)
+            ? (response.data.availabilities ?? []).map((availability) =>
+                typeof availability === "string"
+                  ? availability
+                  : availability.hour,
+              )
             : [],
         );
       } catch (error) {
+        if (controller.signal.aborted) return;
+
         console.error("Erro ao buscar perfil:", error);
         setProfile(null);
         setAvailabilities([]);
       } finally {
-        setIsLoadingAvailability(false);
+        if (!controller.signal.aborted) {
+          setIsLoadingAvailability(false);
+        }
       }
     };
 
-    fetchProfile();
-  }, [user?.id]);
+    void loadProfile();
+
+    return () => {
+      controller.abort();
+    };
+  }, [userId]);
 
   if (!user) return null;
 
-  const handleAvatarChange = async (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -99,14 +110,14 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
       await api.patch("/users/avatar", formData);
 
       await onProfileUpdated();
-      
+
       const response = await api.get<ProfileResponse>("/users/me");
-      setProfile(response.data)
+      setProfile(response.data);
     } catch (error) {
       setAvatarError(
         isAxiosError(error)
-          ? error.response?.data?.message ?? 
-              "Não foi possível atualizar a foto."
+          ? (error.response?.data?.message ??
+              "Não foi possível atualizar a foto.")
           : "Não foi possível atualizar a foto.",
       );
     } finally {
@@ -130,8 +141,8 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
     } catch (error) {
       setAvatarError(
         isAxiosError(error)
-          ? error.response?.data?.message ??
-              "Não foi possível excluir a foto."
+          ? (error.response?.data?.message ??
+              "Não foi possível excluir a foto.")
           : "Não foi possível excluir a foto.",
       );
     } finally {
@@ -163,8 +174,8 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
     } catch (error) {
       setPasswordError(
         isAxiosError(error)
-          ? error.response?.data?.message ??
-              "Não foi possível alterar a senha."
+          ? (error.response?.data?.message ??
+              "Não foi possível alterar a senha.")
           : "Não foi possível alterar a senha.",
       );
     } finally {
@@ -208,15 +219,15 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
             <div className="flex items-center gap-3">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-100">
                 {avatarPreview || profile?.avatarUrl ? (
-                    <img
-                      src={
-                        avatarPreview ??
-                        `${import.meta.env.VITE_API_URL}/files/${profile?.avatarUrl}`
-                      }
-                      alt={`Foto de ${profile?.name ?? user.name}`}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
+                  <img
+                    src={
+                      avatarPreview ??
+                      `${import.meta.env.VITE_API_URL}/files/${profile?.avatarUrl}`
+                    }
+                    alt={`Foto de ${profile?.name ?? user.name}`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
                   <span className="text-xl font-semibold text-sky-700">
                     {profile?.name.charAt(0).toUpperCase()}
                   </span>
@@ -307,9 +318,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
                     type="password"
                     autoComplete="current-password"
                     value={currentPassword}
-                    onChange={(event) =>
-                      setCurrentPassword(event.target.value)
-                    }
+                    onChange={(event) => setCurrentPassword(event.target.value)}
                     error={passwordError}
                   />
 
@@ -318,9 +327,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
                     type="password"
                     autoComplete="new-password"
                     value={newPassword}
-                    onChange={(event) =>
-                      setNewPassword(event.target.value)
-                    }
+                    onChange={(event) => setNewPassword(event.target.value)}
                   />
 
                   <div className="flex flex-wrap items-center justify-end gap-2">
@@ -344,18 +351,14 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
                       disabled={isChangingPassword}
                       className="rounded-md bg-gray-200 px-3 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {isChangingPassword
-                        ? "Alterando..."
-                        : "Atualizar senha"}
+                      {isChangingPassword ? "Alterando..." : "Atualizar senha"}
                     </button>
                   </div>
                 </>
               )}
 
               {passwordSuccess && (
-                <p className="text-xs text-green-600">
-                  {passwordSuccess}
-                </p>
+                <p className="text-xs text-green-600">{passwordSuccess}</p>
               )}
             </div>
           </div>

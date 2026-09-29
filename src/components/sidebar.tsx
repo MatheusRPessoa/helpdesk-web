@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { UserRound, LogOut } from "lucide-react";
@@ -39,54 +39,70 @@ interface ProfileResponse {
 
 export function Sidebar({ links }: SidebarProps) {
   const { user, signOut } = useAuth();
-  const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const userId = user?.id;
+
+  const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
+  const profile = profileData?.id === userId ? profileData : null;
+
+  const fetchProfile = useCallback(
+    async (signal?: AbortSignal): Promise<void> => {
+      if (!userId) return;
+
+      try {
+        const response = await api.get<ProfileResponse>("/users/me", {
+          signal,
+        });
+
+        if (!signal?.aborted) {
+          setProfileData(response.data);
+        }
+      } catch (error) {
+        if (signal?.aborted) return;
+
+        console.error("Erro ao buscar perfil:", error);
+        setProfileData(null);
+      }
+    },
+    [userId],
+  );
+
   useEffect(() => {
-  if (!user) {
-    setProfile(null);
-    return;
-  }
+    if (!userId) return;
 
-  const fetchProfile = async () => {
-    try {
-      const response = await api.get<ProfileResponse>("/users/me");
-      setProfile(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar perfil:", error);
-      setProfile(null);
-    }
-  };
+    const controller = new AbortController();
 
-  fetchProfile();
-}, [user?.id]);
+    api
+      .get<ProfileResponse>("/users/me", {
+        signal: controller.signal,
+      })
+      .then((response) => {
+        if (controller.signal.aborted) return;
 
-  const initials = profile?.name
-    .split(" ")
+        setProfileData(response.data);
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+
+        console.error("Erro ao buscar perfil:", error);
+        setProfileData(null);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [userId]);
+
+  const initials = (profile?.name ?? user?.name ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0])
+    .map((part) => part.charAt(0))
     .join("")
     .toUpperCase();
-
-    const fetchProfile = async () => {
-  if (!user) {
-    setProfile(null);
-    return;
-  }
-
-  try {
-    const response = await api.get<ProfileResponse>("/users/me");
-    setProfile(response.data);
-  } catch (error) {
-    console.error("Erro ao buscar perfil:", error);
-    setProfile(null);
-  }
-};
-
-useEffect(() => {
-  fetchProfile();
-}, [user?.id]);
 
   return (
     <aside className="flex h-screen w-50 flex-col justify-between bg-blue-dark py-5">
@@ -146,10 +162,10 @@ useEffect(() => {
 
           <span className="flex min-w-0 flex-1 flex-col overflow-hidden">
             <span className="truncate text-xs font-bold text-gray-100">
-              {profile?.name}
+              {profile?.name ?? user?.name}
             </span>
             <span className="truncate text-xxs text-gray-400">
-              {profile?.email}
+              {profile?.email ?? user?.email}
             </span>
           </span>
         </button>
@@ -174,7 +190,10 @@ useEffect(() => {
               <button
                 type="button"
                 role="menuitem"
-                onClick={() => setIsProfileModalOpen(true)}
+                onClick={() => {
+                  setIsUserMenuOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
                 className="flex w-full items-center gap-3 rounded-md px-2.5 py-2.5 text-left text-xs text-gray-300 transition hover:bg-white/5 hover:text-gray-100"
               >
                 <UserRound size={16} className="shrink-0 text-gray-400" />
