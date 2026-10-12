@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { UserRound, LogOut } from "lucide-react";
@@ -40,6 +40,7 @@ interface ProfileResponse {
 export function Sidebar({ links }: SidebarProps) {
   const { user, signOut } = useAuth();
   const userId = user?.id;
+  const userMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -141,6 +142,7 @@ export function Sidebar({ links }: SidebarProps) {
 
       <div className="relative border-t border-gray-600/20 px-3 pb-2 pt-4">
         <button
+          ref={userMenuButtonRef}
           type="button"
           onClick={() => setIsUserMenuOpen((prev) => !prev)}
           aria-expanded={isUserMenuOpen}
@@ -220,6 +222,7 @@ export function Sidebar({ links }: SidebarProps) {
 
         {isProfileModalOpen && (
           <ProfileModal
+            returnFocusRef={userMenuButtonRef}
             onClose={() => setIsProfileModalOpen(false)}
             onProfileUpdated={fetchProfile}
           />

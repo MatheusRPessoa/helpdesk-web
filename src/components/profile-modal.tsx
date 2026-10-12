@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type RefObject,
+} from "react";
 import { ImagePlus, Trash2, X } from "lucide-react";
 import { isAxiosError } from "axios";
 
@@ -10,6 +17,7 @@ import type { UserRole } from "@/types";
 interface ProfileModalProps {
   onClose: () => void;
   onProfileUpdated: () => Promise<void>;
+  returnFocusRef: RefObject<HTMLButtonElement | null>;
 }
 
 interface ProfileResponse {
@@ -24,10 +32,16 @@ interface ProfileResponse {
   }[];
 }
 
-export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
-  const { user } = useAuth();
+export function ProfileModal({
+  onClose,
+  onProfileUpdated,
+  returnFocusRef,
+}: ProfileModalProps) {
+  const { user, updateUser } = useAuth();
   const userId = user?.id;
 
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [availabilities, setAvailabilities] = useState<string[]>([]);
   const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
@@ -45,6 +59,27 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
   const [avatarError, setAvatarError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog || !userId) return;
+
+    // The profile menu item is unmounted when this modal opens.
+    const returnFocusTarget = returnFocusRef.current;
+    dialog.showModal();
+    closeButtonRef.current?.focus();
+
+    return () => {
+      dialog.close();
+      if (returnFocusTarget?.isConnected) returnFocusTarget.focus();
+    };
+  }, [userId, returnFocusRef]);
+
+  useEffect(() => {
+    if (!avatarPreview) return;
+
+    return () => URL.revokeObjectURL(avatarPreview);
+  }, [avatarPreview]);
 
   useEffect(() => {
     if (!userId) return;
@@ -94,7 +129,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
 
   const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || isUploadingAvatar || isDeletingAvatar) return;
 
     setAvatarError("");
 
@@ -109,10 +144,12 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
 
       await api.patch("/users/avatar", formData);
 
-      await onProfileUpdated();
-
       const response = await api.get<ProfileResponse>("/users/me");
       setProfile(response.data);
+      updateUser({ ...user, avatarUrl: response.data.avatarUrl });
+      setAvatarPreview(null);
+
+      await onProfileUpdated();
     } catch (error) {
       setAvatarError(
         isAxiosError(error)
@@ -121,6 +158,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
           : "Não foi possível atualizar a foto.",
       );
     } finally {
+      setAvatarPreview(null);
       setIsUploadingAvatar(false);
 
       if (fileInputRef.current) {
@@ -130,20 +168,31 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
   };
 
   const handleDeleteAvatar = async () => {
-    if (!user.avatarUrl) return;
+    if (!profile?.avatarUrl || isUploadingAvatar || isDeletingAvatar) {
+      return;
+    }
 
     setAvatarError("");
     setIsDeletingAvatar(true);
 
     try {
       await api.delete("/users/avatar");
-      window.location.reload();
+
+      setProfile((currentProfile) =>
+        currentProfile
+          ? { ...currentProfile, avatarUrl: null }
+          : currentProfile,
+      );
+      updateUser({ ...user, avatarUrl: null });
+      setAvatarPreview(null);
+
+      await onProfileUpdated();
     } catch (error) {
       setAvatarError(
         isAxiosError(error)
           ? (error.response?.data?.message ??
-              "Não foi possível excluir a foto.")
-          : "Não foi possível excluir a foto.",
+              "Não foi possível excluir a foto ou atualizar o perfil.")
+          : "Não foi possível excluir a foto ou atualizar o perfil.",
       );
     } finally {
       setIsDeletingAvatar(false);
@@ -184,18 +233,19 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4"
+    <dialog
+      ref={dialogRef}
+      aria-labelledby="profile-title"
+      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none items-center justify-center bg-transparent p-2 open:flex backdrop:bg-black/50 sm:p-4"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="profile-title"
-        className="flex max-h-[96vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-gray-300 bg-gray-200 shadow-xl"
-      >
+      <div className="flex max-h-[96vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-gray-300 bg-gray-200 shadow-xl">
         <header className="flex shrink-0 items-center justify-between border-b border-gray-300 px-8 py-6">
           <h2
             id="profile-title"
@@ -205,6 +255,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
           </h2>
 
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Fechar perfil"
@@ -252,7 +303,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
                 {isUploadingAvatar ? "Enviando..." : "Nova imagem"}
               </button>
 
-              {(avatarPreview || profile?.avatarUrl) && (
+              {profile?.avatarUrl && (
                 <button
                   type="button"
                   onClick={handleDeleteAvatar}
@@ -404,7 +455,7 @@ export function ProfileModal({ onClose, onProfileUpdated }: ProfileModalProps) {
             Salvar
           </button>
         </footer>
-      </section>
-    </div>
+      </div>
+    </dialog>
   );
 }
